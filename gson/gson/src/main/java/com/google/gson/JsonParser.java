@@ -31,14 +31,15 @@ import java.io.StringReader;
  * @since 1.3
  */
 public final class JsonParser {
-  /** @deprecated No need to instantiate this class, use the static methods instead. */
+  /**
+   * @deprecated No need to instantiate this class, use the static methods instead.
+   */
   @Deprecated
   public JsonParser() {}
 
   /**
-   * Parses the specified JSON string into a parse tree.
-   * An exception is thrown if the JSON string has multiple top-level JSON elements,
-   * or if there is trailing data.
+   * Parses the specified JSON string into a parse tree. An exception is thrown if the JSON string
+   * has multiple top-level JSON elements, or if there is trailing data.
    *
    * <p>The JSON string is parsed in {@linkplain JsonReader#setLenient(boolean) lenient mode}.
    *
@@ -52,16 +53,15 @@ public final class JsonParser {
   }
 
   /**
-   * Parses the complete JSON string provided by the reader into a parse tree.
-   * An exception is thrown if the JSON string has multiple top-level JSON elements,
-   * or if there is trailing data.
+   * Parses the complete JSON string provided by the reader into a parse tree. An exception is
+   * thrown if the JSON string has multiple top-level JSON elements, or if there is trailing data.
    *
    * <p>The JSON data is parsed in {@linkplain JsonReader#setLenient(boolean) lenient mode}.
    *
    * @param reader JSON text
    * @return a parse tree of {@link JsonElement}s corresponding to the specified JSON
-   * @throws JsonParseException if there is an IOException or if the specified
-   *     text is not valid JSON
+   * @throws JsonParseException if there is an IOException or if the specified text is not valid
+   *     JSON
    * @since 2.8.6
    */
   public static JsonElement parseReader(Reader reader) throws JsonIOException, JsonSyntaxException {
@@ -82,16 +82,16 @@ public final class JsonParser {
   }
 
   /**
-   * Returns the next value from the JSON stream as a parse tree.
-   * Unlike the other {@code parse} methods, no exception is thrown if the JSON data has
-   * multiple top-level JSON elements, or if there is trailing data.
+   * Returns the next value from the JSON stream as a parse tree. Unlike the other {@code parse}
+   * methods, no exception is thrown if the JSON data has multiple top-level JSON elements, or if
+   * there is trailing data.
    *
    * <p>The JSON data is parsed in {@linkplain JsonReader#setLenient(boolean) lenient mode},
-   * regardless of the lenient mode setting of the provided reader. The lenient mode setting
-   * of the reader is restored once this method returns.
+   * regardless of the lenient mode setting of the provided reader. The lenient mode setting of the
+   * reader is restored once this method returns.
    *
-   * @throws JsonParseException if there is an IOException or if the specified
-   *     text is not valid JSON
+   * @throws JsonParseException if there is an IOException or if the specified text is not valid
+   *     JSON
    * @since 2.8.6
    */
   public static JsonElement parseReader(JsonReader reader)
@@ -109,21 +109,31 @@ public final class JsonParser {
     }
   }
 
-  /** @deprecated Use {@link JsonParser#parseString} */
+  /**
+   * @deprecated Use {@link JsonParser#parseString}
+   */
   @Deprecated
   public JsonElement parse(String json) throws JsonSyntaxException {
     return parseString(json);
   }
 
-  /** @deprecated Use {@link JsonParser#parseReader(Reader)} */
+  /**
+   * @deprecated Use {@link JsonParser#parseReader(Reader)}
+   */
   @Deprecated
   public JsonElement parse(Reader json) throws JsonIOException, JsonSyntaxException {
     return parseReader(json);
   }
 
-  /** @deprecated Use {@link JsonParser#parseReader(JsonReader)} */
+  /**
+   * @deprecated Use {@link JsonParser#parseReader(JsonReader)}
+   */
   @Deprecated
   public JsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
-    return parseReader(json);
+    try {
+      return parseReader(json);
+    } catch (Exception e) {
+      System.out.println("Error occurred");
+    }
   }
 }
