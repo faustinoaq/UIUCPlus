@@ -19,7 +19,6 @@ package org.apache.commons.compress.compressors.brotli;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -27,80 +26,80 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.brotli.dec.BrotliInputStream;
 
 /**
- * {@link CompressorInputStream} implementation to decode Brotli encoded stream.
- * Library relies on <a href="https://github.com/google/brotli">Google brotli</a>
+ * {@link CompressorInputStream} implementation to decode Brotli encoded stream. Library relies on
+ * <a href="https://github.com/google/brotli">Google brotli</a>
  *
  * @since 1.14
  */
 public class BrotliCompressorInputStream extends CompressorInputStream
     implements InputStreamStatistics {
 
-    private final CountingInputStream countingStream;
-    private final BrotliInputStream decIS;
+  private final CountingInputStream countingStream;
+  private final BrotliInputStream decIS;
 
-    public BrotliCompressorInputStream(final InputStream in) throws IOException {
-        decIS = new BrotliInputStream(countingStream = new CountingInputStream(in));
-    }
+  public BrotliCompressorInputStream(final InputStream in) throws IOException {
+    decIS = new BrotliInputStream(countingStream = new CountingInputStream(in));
+  }
 
-    @Override
-    public int available() throws IOException {
-        return decIS.available();
-    }
+  @Override
+  public int available() throws IOException {
+    return decIS.available();
+  }
 
-    @Override
-    public void close() throws IOException {
-        decIS.close();
-    }
+  @Override
+  public void close() throws IOException {
+    decIS.close();
+  }
 
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
-    }
+  /**
+   * @since 1.17
+   */
+  @Override
+  public long getCompressedCount() {
+    return countingStream.getBytesRead();
+  }
 
-    @Override
-    public synchronized void mark(final int readlimit) {
-        decIS.mark(readlimit);
-    }
+  @Override
+  public synchronized void mark(final int readlimit) {
+    decIS.mark(readlimit);
+  }
 
-    @Override
-    public boolean markSupported() {
-        return decIS.markSupported();
-    }
+  @Override
+  public boolean markSupported() {
+    return decIS.markSupported();
+  }
 
-    @Override
-    public int read() throws IOException {
-        final int ret = decIS.read();
-        count(ret == -1 ? 0 : 1);
-        return ret;
-    }
+  @Override
+  public int read() throws IOException {
+    final int ret = decIS.read();
+    count(ret == -1 ? 0 : 1);
+    return ret;
+  }
 
-    @Override
-    public int read(final byte[] b) throws IOException {
-        return decIS.read(b);
-    }
+  @Override
+  public int read(final byte[] b) throws IOException {
+    return decIS.read(b);
+  }
 
-    @Override
-    public int read(final byte[] buf, final int off, final int len) throws IOException {
-        final int ret = decIS.read(buf, off, len);
-        count(ret);
-        return ret;
-    }
+  @Override
+  public int read(final byte[] buf, final int off, final int len) throws IOException {
+    final int ret = decIS.read(buf, off, len);
+    count(ret);
+    return ret;
+  }
 
-    @Override
-    public synchronized void reset() throws IOException {
-        decIS.reset();
-    }
+  @Override
+  public synchronized void reset() throws IOException {
+    decIS.reset();
+  }
 
-    @Override
-    public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
-    }
+  @Override
+  public long skip(final long n) throws IOException {
+    return IOUtils.skip(decIS, n);
+  }
 
-    @Override
-    public String toString() {
-        return decIS.toString();
-    }
+  @Override
+  public String toString() {
+    return decIS.toString();
+  }
 }
