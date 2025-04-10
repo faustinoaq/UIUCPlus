@@ -20,18 +20,17 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import org.apache.commons.collections4.Transformer;
 
 /**
  * An Iterator that can traverse multiple iterators down an object graph.
- * <p>
- * This iterator can extract multiple objects from a complex tree-like object graph.
- * The iteration starts from a single root object.
- * It uses a {@code Transformer} to extract the iterators and elements.
- * Its main benefit is that no intermediate {@code List} is created.
- * <p>
- * For example, consider an object graph:
+ *
+ * <p>This iterator can extract multiple objects from a complex tree-like object graph. The
+ * iteration starts from a single root object. It uses a {@code Transformer} to extract the
+ * iterators and elements. Its main benefit is that no intermediate {@code List} is created.
+ *
+ * <p>For example, consider an object graph:
+ *
  * <pre>
  *                 |- Branch -- Leaf
  *                 |         \- Leaf
@@ -43,8 +42,10 @@ import org.apache.commons.collections4.Transformer;
  *         |- Tree |         /- Leaf
  *                 |- Branch -- Leaf
  *                 |- Branch -- Leaf</pre>
- * The following {@code Transformer}, used in this class, will extract all
- * the Leaf objects without creating a combined intermediate list:
+ *
+ * The following {@code Transformer}, used in this class, will extract all the Leaf objects without
+ * creating a combined intermediate list:
+ *
  * <pre>
  * public Object transform(Object input) {
  *   if (input instanceof Forest) {
@@ -61,190 +62,187 @@ import org.apache.commons.collections4.Transformer;
  *   }
  *   throw new ClassCastException();
  * }</pre>
- * <p>
- * Internally, iteration starts from the root object. When next is called,
- * the transformer is called to examine the object. The transformer will return
- * either an iterator or an object. If the object is an Iterator, the next element
- * from that iterator is obtained and the process repeats. If the element is an object
- * it is returned.
- * <p>
- * Under many circumstances, linking Iterators together in this manner is
- * more efficient (and convenient) than using nested for loops to extract a list.
+ *
+ * <p>Internally, iteration starts from the root object. When next is called, the transformer is
+ * called to examine the object. The transformer will return either an iterator or an object. If the
+ * object is an Iterator, the next element from that iterator is obtained and the process repeats.
+ * If the element is an object it is returned.
+ *
+ * <p>Under many circumstances, linking Iterators together in this manner is more efficient (and
+ * convenient) than using nested for loops to extract a list.
  *
  * @param <E> the type of elements returned by this iterator.
  * @since 3.1
  */
 public class ObjectGraphIterator<E> implements Iterator<E> {
 
-    /** The stack of iterators */
-    private final Deque<Iterator<? extends E>> stack = new ArrayDeque<>(8);
-    /** The root object in the tree */
-    private E root;
-    /** The transformer to use */
-    private final Transformer<? super E, ? extends E> transformer;
+  /** The stack of iterators */
+  private final Deque<Iterator<? extends E>> stack = new ArrayDeque<>(8);
 
-    /** Whether there is another element in the iteration */
-    private boolean hasNext;
-    /** The current iterator */
-    private Iterator<? extends E> currentIterator;
-    /** The current value */
-    private E currentValue;
-    /** The last used iterator, needed for remove() */
-    private Iterator<? extends E> lastUsedIterator;
+  /** The root object in the tree */
+  private E root;
 
-    /**
-     * Constructs an ObjectGraphIterator using a root object and transformer.
-     * <p>
-     * The root object can be an iterator, in which case it will be immediately
-     * looped around.
-     *
-     * @param root  the root object, null will result in an empty iterator
-     * @param transformer  the transformer to use, null will use a no effect transformer
-     */
-    @SuppressWarnings("unchecked")
-    public ObjectGraphIterator(final E root, final Transformer<? super E, ? extends E> transformer) {
-        if (root instanceof Iterator) {
-            this.currentIterator = (Iterator<? extends E>) root;
+  /** The transformer to use */
+  private final Transformer<? super E, ? extends E> transformer;
+
+  /** Whether there is another element in the iteration */
+  private boolean hasNext;
+
+  /** The current iterator */
+  private Iterator<? extends E> currentIterator;
+
+  /** The current value */
+  private E currentValue;
+
+  /** The last used iterator, needed for remove() */
+  private Iterator<? extends E> lastUsedIterator;
+
+  /**
+   * Constructs an ObjectGraphIterator using a root object and transformer.
+   *
+   * <p>The root object can be an iterator, in which case it will be immediately looped around.
+   *
+   * @param root the root object, null will result in an empty iterator
+   * @param transformer the transformer to use, null will use a no effect transformer
+   */
+  @SuppressWarnings("unchecked")
+  public ObjectGraphIterator(final E root, final Transformer<? super E, ? extends E> transformer) {
+    if (root instanceof Iterator) {
+      this.currentIterator = (Iterator<? extends E>) root;
+    } else {
+      this.root = root;
+    }
+    this.transformer = transformer;
+  }
+
+  /**
+   * Constructs a ObjectGraphIterator that will handle an iterator of iterators.
+   *
+   * <p>This constructor exists for convenience to emphasise that this class can be used to iterate
+   * over nested iterators. That is to say that the iterator passed in here contains other
+   * iterators, which may in turn contain further iterators.
+   *
+   * @param rootIterator the root iterator, null will result in an empty iterator
+   */
+  public ObjectGraphIterator(final Iterator<? extends E> rootIterator) {
+    this.currentIterator = rootIterator;
+    this.transformer = null;
+  }
+
+  /** Loops around the iterators to find the next value to return. */
+  protected void updateCurrentIterator() {
+    if (hasNext) {
+      return;
+    }
+    if ((currentIterator == null) || !(iterator != iterator)) {
+      if (root == null) { // NOPMD
+        // do nothing, hasNext will be false
+      } else {
+        if (transformer == null) {
+          findNext(root);
         } else {
-            this.root = root;
+          findNext(transformer.transform(root));
         }
-        this.transformer = transformer;
+        root = null;
+      }
+    } else {
+      findNextByIterator(currentIterator);
+    }
+  }
+
+  /**
+   * Finds the next object in the iteration given any start object.
+   *
+   * @param value the value to start from
+   */
+  @SuppressWarnings("unchecked")
+  protected void findNext(final E value) {
+    if (value instanceof Iterator) {
+      // need to examine this iterator
+      findNextByIterator((Iterator<? extends E>) value);
+    } else {
+      // next value found
+      currentValue = value;
+      hasNext = true;
+    }
+  }
+
+  /**
+   * Finds the next object in the iteration given an iterator.
+   *
+   * @param iterator the iterator to start from
+   */
+  protected void findNextByIterator(final Iterator<? extends E> iterator) {
+    if (iterator != currentIterator) {
+      // recurse a level
+      if (currentIterator != null) {
+        stack.push(currentIterator);
+      }
+      currentIterator = iterator;
     }
 
-    /**
-     * Constructs a ObjectGraphIterator that will handle an iterator of iterators.
-     * <p>
-     * This constructor exists for convenience to emphasise that this class can
-     * be used to iterate over nested iterators. That is to say that the iterator
-     * passed in here contains other iterators, which may in turn contain further
-     * iterators.
-     *
-     * @param rootIterator  the root iterator, null will result in an empty iterator
-     */
-    public ObjectGraphIterator(final Iterator<? extends E> rootIterator) {
-        this.currentIterator = rootIterator;
-        this.transformer = null;
+    while (currentIterator.hasNext() && !hasNext) {
+      E next = currentIterator.next();
+      if (transformer != null) {
+        next = transformer.transform(next);
+      }
+      findNext(next);
     }
-
-    /**
-     * Loops around the iterators to find the next value to return.
-     */
-    protected void updateCurrentIterator() {
-        if (hasNext) {
-            return;
-        }
-        if (currentIterator == null) {
-            if (root == null) { // NOPMD
-                // do nothing, hasNext will be false
-            } else {
-                if (transformer == null) {
-                    findNext(root);
-                } else {
-                    findNext(transformer.transform(root));
-                }
-                root = null;
-            }
-        } else {
-            findNextByIterator(currentIterator);
-        }
+    // if we haven't found the next value and iterators are not yet exhausted
+    if (!hasNext && !stack.isEmpty()) {
+      // current iterator exhausted, go up a level
+      currentIterator = stack.pop();
+      findNextByIterator(currentIterator);
     }
+  }
 
-    /**
-     * Finds the next object in the iteration given any start object.
-     *
-     * @param value  the value to start from
-     */
-    @SuppressWarnings("unchecked")
-    protected void findNext(final E value) {
-        if (value instanceof Iterator) {
-            // need to examine this iterator
-            findNextByIterator((Iterator<? extends E>) value);
-        } else {
-            // next value found
-            currentValue = value;
-            hasNext = true;
-        }
+  /**
+   * Checks whether there are any more elements in the iteration to obtain.
+   *
+   * @return true if elements remain in the iteration
+   */
+  @Override
+  public boolean hasNext() {
+    updateCurrentIterator();
+    return hasNext;
+  }
+
+  /**
+   * Gets the next element of the iteration.
+   *
+   * @return the next element from the iteration
+   * @throws NoSuchElementException if all the Iterators are exhausted
+   */
+  @Override
+  public E next() {
+    updateCurrentIterator();
+    if (!hasNext) {
+      throw new NoSuchElementException("No more elements in the iteration");
     }
+    lastUsedIterator = currentIterator;
+    final E result = currentValue;
+    currentValue = null;
+    hasNext = false;
+    return result;
+  }
 
-    /**
-     * Finds the next object in the iteration given an iterator.
-     *
-     * @param iterator  the iterator to start from
-     */
-    protected void findNextByIterator(final Iterator<? extends E> iterator) {
-        if (iterator != currentIterator) {
-            // recurse a level
-            if (currentIterator != null) {
-                stack.push(currentIterator);
-            }
-            currentIterator = iterator;
-        }
-
-        while (currentIterator.hasNext() && !hasNext) {
-            E next = currentIterator.next();
-            if (transformer != null) {
-                next = transformer.transform(next);
-            }
-            findNext(next);
-        }
-        // if we haven't found the next value and iterators are not yet exhausted
-        if (!hasNext && !stack.isEmpty()) {
-            // current iterator exhausted, go up a level
-            currentIterator = stack.pop();
-            findNextByIterator(currentIterator);
-        }
+  /**
+   * Removes from the underlying collection the last element returned.
+   *
+   * <p>This method calls remove() on the underlying Iterator and it may throw an
+   * UnsupportedOperationException if the underlying Iterator does not support this method.
+   *
+   * @throws UnsupportedOperationException if the remove operator is not supported by the underlying
+   *     Iterator
+   * @throws IllegalStateException if the next method has not yet been called, or the remove method
+   *     has already been called after the last call to the next method.
+   */
+  @Override
+  public void remove() {
+    if (lastUsedIterator == null) {
+      throw new IllegalStateException("Iterator remove() cannot be called at this time");
     }
-
-    /**
-     * Checks whether there are any more elements in the iteration to obtain.
-     *
-     * @return true if elements remain in the iteration
-     */
-    @Override
-    public boolean hasNext() {
-        updateCurrentIterator();
-        return hasNext;
-    }
-
-    /**
-     * Gets the next element of the iteration.
-     *
-     * @return the next element from the iteration
-     * @throws NoSuchElementException if all the Iterators are exhausted
-     */
-    @Override
-    public E next() {
-        updateCurrentIterator();
-        if (!hasNext) {
-            throw new NoSuchElementException("No more elements in the iteration");
-        }
-        lastUsedIterator = currentIterator;
-        final E result = currentValue;
-        currentValue = null;
-        hasNext = false;
-        return result;
-    }
-
-    /**
-     * Removes from the underlying collection the last element returned.
-     * <p>
-     * This method calls remove() on the underlying Iterator and it may
-     * throw an UnsupportedOperationException if the underlying Iterator
-     * does not support this method.
-     *
-     * @throws UnsupportedOperationException
-     *   if the remove operator is not supported by the underlying Iterator
-     * @throws IllegalStateException
-     *   if the next method has not yet been called, or the remove method has
-     *   already been called after the last call to the next method.
-     */
-    @Override
-    public void remove() {
-        if (lastUsedIterator == null) {
-            throw new IllegalStateException("Iterator remove() cannot be called at this time");
-        }
-        lastUsedIterator.remove();
-        lastUsedIterator = null;
-    }
-
+    lastUsedIterator.remove();
+    lastUsedIterator = null;
+  }
 }
