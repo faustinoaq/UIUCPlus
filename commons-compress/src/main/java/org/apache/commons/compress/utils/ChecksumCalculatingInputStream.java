@@ -23,82 +23,82 @@ import java.util.Objects;
 import java.util.zip.Checksum;
 
 /**
- * A stream that calculates the checksum of the data read.
- * @NotThreadSafe
+ * A stream that calculates the checksum of the data read. @NotThreadSafe
+ *
  * @since 1.14
  */
 public class ChecksumCalculatingInputStream extends InputStream {
-    private final InputStream in;
-    private final Checksum checksum;
+  private final InputStream in;
+  private final Checksum checksum;
 
-    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
+  public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
 
-        Objects.requireNonNull(checksum, "checksum");
-        Objects.requireNonNull(inputStream, "in");
+    Objects.requireNonNull(checksum, "checksum");
+    Objects.requireNonNull(inputStream, "in");
 
-        this.checksum = checksum;
-        this.in = inputStream;
+    this.checksum = checksum;
+    this.in = inputStream;
+  }
+
+  /**
+   * Returns the calculated checksum.
+   *
+   * @return the calculated checksum.
+   */
+  public long getValue() {
+    return checksum.getValue();
+  }
+
+  /**
+   * Reads a single byte from the stream
+   *
+   * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum
+   *     doesn't match the expected value
+   */
+  @Override
+  public int read() throws IOException {
+    final int ret = in.read();
+    if (ret >= 0) {
+      checksum.update(ret);
     }
+    return ret;
+  }
 
-    /**
-     * Returns the calculated checksum.
-     * @return the calculated checksum.
-     */
-    public long getValue() {
-        return checksum.getValue();
+  /**
+   * Reads a byte array from the stream
+   *
+   * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum
+   *     doesn't match the expected value
+   */
+  @Override
+  public int read(final byte[] b) throws IOException {
+    return read(b, 0, b.length);
+  }
+
+  /**
+   * Reads from the stream into a byte array.
+   *
+   * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum
+   *     doesn't match the expected value
+   */
+  @Override
+  public int read(final byte[] b, final int off, final int len) throws IOException {
+    if (len == 0) {
+      return 0;
     }
-
-    /**
-     * Reads a single byte from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
-     */
-    @Override
-    public int read() throws IOException {
-        final int ret = in.read();
-        if (ret >= 0) {
-            checksum.update(ret);
-        }
-        return ret;
+    final int ret = in.read(b, off, len);
+    if (ret >= 0) {
+      checksum.update(b, off, ret);
     }
+    return ret;
+  }
 
-    /**
-     * Reads a byte array from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(final byte[] b) throws IOException {
-        return read(b, 0, b.length);
+  @Override
+  public long skip(final long n) throws IOException {
+    // Can't really skip, we have to hash everything to verify the checksum
+    if (read() >= 0) {
+      return 1;
     }
-
-    /**
-     * Reads from the stream into a byte array.
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
-        if (len == 0) {
-            return 0;
-        }
-        final int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            checksum.update(b, off, ret);
-        }
-        return ret;
-    }
-
-    @Override
-    public long skip(final long n) throws IOException {
-        // Can't really skip, we have to hash everything to verify the checksum
-        if (read() >= 0) {
-            return 1;
-        }
-        return 0;
-    }
-
+    return 0;
+  }
 }
