@@ -27,49 +27,48 @@ import org.apache.commons.numbers.core.Precision;
  */
 public class EvaluationRmsChecker implements ConvergenceChecker<Evaluation> {
 
-    /** relative tolerance for comparisons. */
-    private final double relTol;
-    /** absolute tolerance for comparisons. */
-    private final double absTol;
+  /** relative tolerance for comparisons. */
+  private final double relTol;
 
-    /**
-     * Create a convergence checker for the RMS with the same relative and absolute
-     * tolerance.
-     *
-     * <p>Convenience constructor for when the relative and absolute tolerances are the
-     * same. Same as {@code new EvaluationRmsChecker(tol, tol)}.
-     *
-     * @param tol the relative and absolute tolerance.
-     * @see #EvaluationRmsChecker(double, double)
-     */
-    public EvaluationRmsChecker(final double tol) {
-        this(tol, tol);
-    }
+  /** absolute tolerance for comparisons. */
+  private final double absTol;
 
-    /**
-     * Create a convergence checker for the RMS with a relative and absolute tolerance.
-     *
-     * <p>The optimization has converged when the RMS of consecutive evaluations are equal
-     * to within the given relative tolerance or absolute tolerance.
-     *
-     * @param relTol the relative tolerance.
-     * @param absTol the absolute tolerance.
-     * @see Precision#equals(double, double, double)
-     * @see Precision#equalsWithRelativeTolerance(double, double, double)
-     */
-    public EvaluationRmsChecker(final double relTol, final double absTol) {
-        this.relTol = relTol;
-        this.absTol = absTol;
-    }
+  /**
+   * Create a convergence checker for the RMS with the same relative and absolute tolerance.
+   *
+   * <p>Convenience constructor for when the relative and absolute tolerances are the same. Same as
+   * {@code new EvaluationRmsChecker(tol, tol)}.
+   *
+   * @param tol the relative and absolute tolerance.
+   * @see #EvaluationRmsChecker(double, double)
+   */
+  public EvaluationRmsChecker(final double tol) {
+    this(tol, tol);
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean converged(final int iteration,
-                             final Evaluation previous,
-                             final Evaluation current) {
-        final double prevRms = previous.getRMS();
-        final double currRms = current.getRMS();
-        return Precision.equals(prevRms, currRms, this.absTol) ||
-                Precision.equalsWithRelativeTolerance(prevRms, currRms, this.relTol);
-    }
+  /**
+   * Create a convergence checker for the RMS with a relative and absolute tolerance.
+   *
+   * <p>The optimization has converged when the RMS of consecutive evaluations are equal to within
+   * the given relative tolerance or absolute tolerance.
+   *
+   * @param relTol the relative tolerance.
+   * @param absTol the absolute tolerance.
+   * @see Precision#equals(double, double, double)
+   * @see Precision#equalsWithRelativeTolerance(double, double, double)
+   */
+  public EvaluationRmsChecker(final double relTol, final double absTol) {
+    this.relTol = relTol;
+    this.absTol = absTol;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean converged(
+      final int iteration, final Evaluation previous, final Evaluation current) {
+    final double prevRms = previous.getRMS();
+    final double currRms = current.getRMS();
+    return Precision.equals(prevRms, currRms, this.absTol)
+        || Precision.equalsWithRelativeTolerance(prevRms, currRms, this.relTol);
+  }
 }
