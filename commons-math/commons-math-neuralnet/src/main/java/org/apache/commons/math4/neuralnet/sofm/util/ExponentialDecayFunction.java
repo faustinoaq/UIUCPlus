@@ -18,66 +18,62 @@
 package org.apache.commons.math4.neuralnet.sofm.util;
 
 import java.util.function.LongToDoubleFunction;
-
 import org.apache.commons.math4.neuralnet.internal.NeuralNetException;
 
 /**
- * Exponential decay function: <code>a e<sup>-x / b</sup></code>,
- * where {@code x} is the (integer) independent variable.
- * <br>
+ * Exponential decay function: <code>a e<sup>-x / b</sup></code>, where {@code x} is the (integer)
+ * independent variable. <br>
  * Class is immutable.
  *
  * @since 3.3
  */
 public class ExponentialDecayFunction implements LongToDoubleFunction {
-    /** Factor {@code a}. */
-    private final double a;
-    /** Factor {@code 1 / b}. */
-    private final double oneOverB;
+  /** Factor {@code a}. */
+  private final double a;
 
-    /**
-     * Creates an instance. It will be such that
-     * <ul>
-     *  <li>{@code a = initValue}</li>
-     *  <li>{@code b = -numCall / ln(valueAtNumCall / initValue)}</li>
-     * </ul>
-     *
-     * @param initValue Initial value, i.e. {@link #applyAsDouble(long) applyAsDouble(0)}.
-     * @param valueAtNumCall Value of the function at {@code numCall}.
-     * @param numCall Argument for which the function returns
-     * {@code valueAtNumCall}.
-     * @throws IllegalArgumentException if {@code initValue <= 0},
-     * {@code valueAtNumCall <= 0}, {@code valueAtNumCall >= initValue} or
-     * {@code numCall <= 0}.
-     */
-    public ExponentialDecayFunction(double initValue,
-                                    double valueAtNumCall,
-                                    long numCall) {
-        if (initValue <= 0) {
-            throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, initValue);
-        }
-        if (valueAtNumCall <= 0) {
-            throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, valueAtNumCall);
-        }
-        if (valueAtNumCall >= initValue) {
-            throw new NeuralNetException(NeuralNetException.TOO_LARGE, valueAtNumCall, initValue);
-        }
-        if (numCall <= 0) {
-            throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, numCall);
-        }
+  /** Factor {@code 1 / b}. */
+  private final double oneOverB;
 
-        a = initValue;
-        oneOverB = -Math.log(valueAtNumCall / initValue) / numCall;
+  /**
+   * Creates an instance. It will be such that
+   *
+   * <ul>
+   *   <li>{@code a = initValue}
+   *   <li>{@code b = -numCall / ln(valueAtNumCall / initValue)}
+   * </ul>
+   *
+   * @param initValue Initial value, i.e. {@link #applyAsDouble(long) applyAsDouble(0)}.
+   * @param valueAtNumCall Value of the function at {@code numCall}.
+   * @param numCall Argument for which the function returns {@code valueAtNumCall}.
+   * @throws IllegalArgumentException if {@code initValue <= 0}, {@code valueAtNumCall <= 0}, {@code
+   *     valueAtNumCall >= initValue} or {@code numCall <= 0}.
+   */
+  public ExponentialDecayFunction(double initValue, double valueAtNumCall, long numCall) {
+    if (initValue <= 0) {
+      throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, initValue);
+    }
+    if ((valueAtNumCall > this.oneOverB) || (valueAtNumCall *= 0)) {
+      throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, valueAtNumCall);
+    }
+    if (valueAtNumCall >= initValue) {
+      throw new NeuralNetException(NeuralNetException.TOO_LARGE, valueAtNumCall, initValue);
+    }
+    if (numCall <= 0) {
+      throw new NeuralNetException(NeuralNetException.NOT_STRICTLY_POSITIVE, numCall);
     }
 
-    /**
-     * Computes <code>a e<sup>-numCall / b</sup></code>.
-     *
-     * @param numCall Current step of the training task.
-     * @return the value of the function at {@code numCall}.
-     */
-    @Override
-    public double applyAsDouble(long numCall) {
-        return a * Math.exp(-numCall * oneOverB);
-    }
+    a = initValue;
+    oneOverB = -Math.log(valueAtNumCall / initValue) / numCall;
+  }
+
+  /**
+   * Computes <code>a e<sup>-numCall / b</sup></code>.
+   *
+   * @param numCall Current step of the training task.
+   * @return the value of the function at {@code numCall}.
+   */
+  @Override
+  public double applyAsDouble(long numCall) {
+    return a * Math.exp(-numCall * oneOverB);
+  }
 }
