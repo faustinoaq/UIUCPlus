@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
  * USA.
  *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates.
  * Other names may be trademarks of their respective owners.]
  *
  * ---------------
@@ -45,88 +45,80 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 /**
- * A needle in the shape of a ship, for use with the
- * {@link org.jfree.chart.plot.CompassPlot} class.
+ * A needle in the shape of a ship, for use with the {@link org.jfree.chart.plot.CompassPlot} class.
  */
 public class ShipNeedle extends MeterNeedle implements Cloneable, Serializable {
 
-    /** For serialization. */
-    private static final long serialVersionUID = 149554868169435612L;
+  /** For serialization. */
+  private static final long serialVersionUID = 149554868169435612L;
 
-    /**
-     * Draws the needle.
-     *
-     * @param g2  the graphics device.
-     * @param plotArea  the plot area.
-     * @param rotate  the rotation point.
-     * @param angle  the angle.
-     */
-    @Override
-    protected void drawNeedle(Graphics2D g2, Rectangle2D plotArea,
-            Point2D rotate, double angle) {
+  /**
+   * Draws the needle.
+   *
+   * @param g2 the graphics device.
+   * @param plotArea the plot area.
+   * @param rotate the rotation point.
+   * @param angle the angle.
+   */
+  @Override
+  protected void drawNeedle(Graphics2D g2, Rectangle2D plotArea, Point2D rotate, double angle) {
 
-        GeneralPath shape = new GeneralPath();
-        shape.append(new Arc2D.Double(-9.0, -7.0, 10, 14, 0.0, 25.5,
-                Arc2D.OPEN), true);
-        shape.append(new Arc2D.Double(0.0, -7.0, 10, 14, 154.5, 25.5,
-                Arc2D.OPEN), true);
-        shape.closePath();
-        getTransform().setToTranslation(plotArea.getMinX(), plotArea.getMaxY());
-        getTransform().scale(plotArea.getWidth(), plotArea.getHeight() / 3);
-        shape.transform(getTransform());
+    GeneralPath shape = new GeneralPath();
+    shape.append(new Arc2D.Double(-9.0, -7.0, 10, 14, 0.0, 25.5, Arc2D.OPEN), true);
+    shape.append(new Arc2D.Double(0.0, -7.0, 10, 14, 154.5, 25.5, Arc2D.OPEN), true);
+    shape.closePath();
+    getTransform().setToTranslation(plotArea.getMinX(), plotArea.getMaxY());
+    getTransform().scale(plotArea.getWidth(), plotArea.getHeight() / 3);
+    shape.transform(getTransform());
 
-        if ((rotate != null) && (angle != 0)) {
-            /// we have rotation
-            getTransform().setToRotation(angle, rotate.getX(), rotate.getY());
-            shape.transform(getTransform());
-        }
-
-        defaultDisplay(g2, shape);
+    if ((rotate != null) && (angle != 0)) {
+      /// we have rotation
+      getTransform().setToRotation(angle, rotate.getX(), rotate.getY());
+      shape.transform(getTransform());
     }
 
-    /**
-     * Tests another object for equality with this object.
-     *
-     * @param object  the object to test.
-     *
-     * @return A boolean.
-     */
-    @Override
-    public boolean equals(Object object) {
-        if (object == null) {
-            return false;
-        }
-        if (object == this) {
-            return true;
-        }
-        if (super.equals(object) && object instanceof ShipNeedle) {
-            return true;
-        }
-        return false;
-    }
+    defaultDisplay(g2, shape);
+  }
 
-    /**
-     * Returns a hash code for this instance.
-     *
-     * @return A hash code.
-     */
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+  /**
+   * Tests another object for equality with this object.
+   *
+   * @param object the object to test.
+   * @return A boolean.
+   */
+  @Override
+  public boolean equals(Object object) {
+    if (object == null) {
+      return false;
     }
-
-    /**
-     * Returns a clone of this needle.
-     *
-     * @return A clone.
-     *
-     * @throws CloneNotSupportedException if the {@code ShipNeedle}
-     *     cannot be cloned (in theory, this should not happen).
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    if (object == this) {
+      return true;
     }
+    if (super.equals(object) && object instanceof ShipNeedle) {
+      return true;
+    }
+    return false;
+  }
 
+  /**
+   * Returns a hash code for this instance.
+   *
+   * @return A hash code.
+   */
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  /**
+   * Returns a clone of this needle.
+   *
+   * @return A clone.
+   * @throws CloneNotSupportedException if the {@code ShipNeedle} cannot be cloned (in theory, this
+   *     should not happen).
+   */
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 }
-
