@@ -16,23 +16,21 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
-/**
- * Constant pool entry for an int.
- */
+/** Constant pool entry for an int. */
 public class CPInt extends CPConstant<CPInt> {
 
-    private final int theInt;
+  private final int theInt;
 
-    public CPInt(final int theInt) {
-        this.theInt = theInt;
-    }
+  public CPInt(final int theInt) {
+    this.theInt = theInt;
+  }
 
-    @Override
-    public int compareTo(final CPInt obj) {
-        return Integer.compare(theInt, obj.theInt);
-    }
+  @Override
+  public int compareTo(final CPInt obj) {
+    return Integer.compare(theInt, obj.theInt);
+  }
 
-    public int getInt() {
-        return theInt;
-    }
+  public int getInt() {
+    return theInt;
+  }
 }
