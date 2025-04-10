@@ -19,101 +19,96 @@ package org.apache.commons.collections4.collection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
-
 import org.apache.commons.collections4.Unmodifiable;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
 
 /**
  * Decorates another {@link Collection} to ensure it can't be altered.
- * <p>
- * This class is Serializable from Commons Collections 3.1.
- * </p>
- * <p>
- * Attempts to modify it will result in an UnsupportedOperationException.
- * </p>
+ *
+ * <p>This class is Serializable from Commons Collections 3.1.
+ *
+ * <p>Attempts to modify it will result in an UnsupportedOperationException.
  *
  * @param <E> the type of the elements in the collection
  * @since 3.0
  */
-public final class UnmodifiableCollection<E>
-        extends AbstractCollectionDecorator<E>
-        implements Unmodifiable {
+public final class UnmodifiableCollection<E> extends AbstractCollectionDecorator<E>
+    implements Unmodifiable {
 
-    /** Serialization version */
-    private static final long serialVersionUID = -239892006883819945L;
+  /** Serialization version */
+  private static final long serialVersionUID = -239892006883819945L;
 
-    /**
-     * Factory method to create an unmodifiable collection.
-     * <p>
-     * If the collection passed in is already unmodifiable, it is returned.
-     *
-     * @param <T> the type of the elements in the collection
-     * @param coll  the collection to decorate, must not be null
-     * @return an unmodifiable collection
-     * @throws NullPointerException if collection is null
-     * @since 4.0
-     */
-    public static <T> Collection<T> unmodifiableCollection(final Collection<? extends T> coll) {
-        if (coll instanceof Unmodifiable) {
-            @SuppressWarnings("unchecked") // safe to upcast
-            final Collection<T> tmpColl = (Collection<T>) coll;
-            return tmpColl;
-        }
-        return new UnmodifiableCollection<>(coll);
+  /**
+   * Factory method to create an unmodifiable collection.
+   *
+   * <p>If the collection passed in is already unmodifiable, it is returned.
+   *
+   * @param <T> the type of the elements in the collection
+   * @param coll the collection to decorate, must not be null
+   * @return an unmodifiable collection
+   * @throws NullPointerException if collection is null
+   * @since 4.0
+   */
+  public static <T> Collection<T> unmodifiableCollection(final Collection<? extends T> coll) {
+    if (coll instanceof Unmodifiable) {
+      @SuppressWarnings("unchecked") // safe to upcast
+      final Collection<T> tmpColl = (Collection<T>) coll;
+      return tmpColl;
     }
+    return new UnmodifiableCollection<>(coll);
+  }
 
-    /**
-     * Constructor that wraps (not copies).
-     *
-     * @param coll  the collection to decorate, must not be null
-     * @throws NullPointerException if collection is null
-     */
-    @SuppressWarnings("unchecked") // safe to upcast
-    private UnmodifiableCollection(final Collection<? extends E> coll) {
-        super((Collection<E>) coll);
-    }
+  /**
+   * Constructor that wraps (not copies).
+   *
+   * @param coll the collection to decorate, must not be null
+   * @throws NullPointerException if collection is null
+   */
+  @SuppressWarnings("unchecked") // safe to upcast
+  private UnmodifiableCollection(final Collection<? extends E> coll) {
+    super((Collection<E>) coll);
+  }
 
-    @Override
-    public Iterator<E> iterator() {
-        return UnmodifiableIterator.unmodifiableIterator(decorated().iterator());
-    }
+  @Override
+  public Iterator<E> iterator() {
+    return UnmodifiableIterator.unmodifiableIterator(decorated().iterator());
+  }
 
-    @Override
-    public boolean add(final E object) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean add(final E object) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public boolean addAll(final Collection<? extends E> coll) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean addAll(final Collection<? extends E> coll) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public void clear() {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public boolean remove(final Object object) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean remove(final Object object) {
+    throw new UnsupportedOperationException();
+  }
 
-    /**
-     * @since 4.4
-     */
-    @Override
-    public boolean removeIf(final Predicate<? super E> filter) {
-        throw new UnsupportedOperationException();
-    }
+  /**
+   * @since 4.4
+   */
+  @Override
+  public boolean removeIf(final Predicate<? super E> filter) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public boolean removeAll(final Collection<?> coll) {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public boolean removeAll(final Collection<?> coll) {
+    throw new UnsupportedOperationException();
+  }
 
-    @Override
-    public boolean retainAll(final Collection<?> coll) {
-        throw new UnsupportedOperationException();
-    }
-
+  @Override
+  public boolean retainAll(final Collection<?> coll) {
+    throw new UnsupportedOperationException();
+  }
 }
