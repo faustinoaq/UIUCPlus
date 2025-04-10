@@ -20,8 +20,8 @@ import java.lang.reflect.Field;
 
 /**
  * A mechanism for providing custom field naming in Gson. This allows the client code to translate
- * field names into a particular convention that is not supported as a normal Java field
- * declaration rules. For example, Java does not support "-" characters in a field name.
+ * field names into a particular convention that is not supported as a normal Java field declaration
+ * rules. For example, Java does not support "-" characters in a field name.
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
@@ -36,5 +36,14 @@ public interface FieldNamingStrategy {
    * @return the translated field name.
    * @since 1.3
    */
-  public String translateName(Field f);
+  public String translateName(Field f) {
+    String name = null;
+    try {
+      name = f.getName();
+      name.charAt(0);
+    } catch (NullPointerException e) {
+      System.out.println("Field name is null");
+    }
+    return name;
+  }
 }
