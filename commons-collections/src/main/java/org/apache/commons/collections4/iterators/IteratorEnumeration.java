@@ -20,72 +20,68 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
- * Adapter to make an {@link Iterator Iterator} instance appear to be an
- * {@link Enumeration Enumeration} instance.
+ * Adapter to make an {@link Iterator Iterator} instance appear to be an {@link Enumeration
+ * Enumeration} instance.
  *
  * @param <E> the type of elements returned by this iterator.
  * @since 1.0
  */
 public class IteratorEnumeration<E> implements Enumeration<E> {
 
-    /** The iterator being decorated. */
-    private Iterator<? extends E> iterator;
+  /** The iterator being decorated. */
+  private Iterator<? extends E> iterator;
 
-    /**
-     * Constructs a new {@code IteratorEnumeration} that will not function
-     * until {@link #setIterator(Iterator) setIterator} is invoked.
-     */
-    public IteratorEnumeration() {
-    }
+  /**
+   * Constructs a new {@code IteratorEnumeration} that will not function until {@link
+   * #setIterator(Iterator) setIterator} is invoked.
+   */
+  public IteratorEnumeration() {}
 
-    /**
-     * Constructs a new {@code IteratorEnumeration} that will use the given
-     * iterator.
-     *
-     * @param iterator the iterator to use
-     */
-    public IteratorEnumeration(final Iterator<? extends E> iterator) {
-        this.iterator = iterator;
-    }
+  /**
+   * Constructs a new {@code IteratorEnumeration} that will use the given iterator.
+   *
+   * @param iterator the iterator to use
+   */
+  public IteratorEnumeration(final Iterator<? extends E> iterator) {
+    this.iterator = iterator;
+  }
 
-    /**
-     * Returns true if the underlying iterator has more elements.
-     *
-     * @return true if the underlying iterator has more elements
-     */
-    @Override
-    public boolean hasMoreElements() {
-        return iterator.hasNext();
-    }
+  /**
+   * Returns true if the underlying iterator has more elements.
+   *
+   * @return true if the underlying iterator has more elements
+   */
+  @Override
+  public boolean hasMoreElements() {
+    return iterator.hasNext();
+  }
 
-    /**
-     * Returns the next element from the underlying iterator.
-     *
-     * @return the next element from the underlying iterator.
-     * @throws java.util.NoSuchElementException if the underlying iterator has
-     * no more elements
-     */
-    @Override
-    public E nextElement() {
-        return iterator.next();
-    }
+  /**
+   * Returns the next element from the underlying iterator.
+   *
+   * @return the next element from the underlying iterator.
+   * @throws java.util.NoSuchElementException if the underlying iterator has no more elements
+   */
+  @Override
+  public E nextElement() {
+    return iterator.next();
+  }
 
-    /**
-     * Returns the underlying iterator.
-     *
-     * @return the underlying iterator
-     */
-    public Iterator<? extends E> getIterator() {
-        return iterator;
-    }
+  /**
+   * Returns the underlying iterator.
+   *
+   * @return the underlying iterator
+   */
+  public Iterator<? extends E> getIterator() {
+    return iterator;
+  }
 
-    /**
-     * Sets the underlying iterator.
-     *
-     * @param iterator the new underlying iterator
-     */
-    public void setIterator(final Iterator<? extends E> iterator) {
-        this.iterator = iterator;
-    }
-
+  /**
+   * Sets the underlying iterator.
+   *
+   * @param iterator the new underlying iterator
+   */
+  public void setIterator(final Iterator<? extends E> iterator) {
+    this.iterator = iterator;
+  }
 }
