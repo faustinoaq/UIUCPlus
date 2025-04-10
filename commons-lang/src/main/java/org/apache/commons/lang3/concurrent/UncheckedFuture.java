@@ -24,80 +24,98 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.exception.UncheckedInterruptedException;
 
 /**
  * An {@link Future} that throws unchecked instead checked exceptions.
  *
- * @param <V> The result type returned by this Future's {@link #get()} and {@link #get(long, TimeUnit)} methods.
+ * @param <V> The result type returned by this Future's {@link #get()} and {@link #get(long,
+ *     TimeUnit)} methods.
  * @see Future
  * @see Exception
  * @since 3.13.0
  */
 public interface UncheckedFuture<V> extends Future<V> {
 
-    /**
-     * Maps the given instances as unchecked.
-     *
-     * @param <T> The result type returned by the Futures' {@link #get()} and {@link #get(long, TimeUnit)} methods.
-     *
-     * @param futures The Futures to uncheck.
-     * @return a new stream.
-     */
-    static <T> Stream<UncheckedFuture<T>> map(final Collection<Future<T>> futures) {
-        return futures.stream().map(UncheckedFuture::on);
+  /**
+   * Maps the given instances as unchecked.
+   *
+   * @param <T> The result type returned by the Futures' {@link #get()} and {@link #get(long,
+   *     TimeUnit)} methods.
+   * @param futures The Futures to uncheck.
+   * @return a new stream.
+   */
+  static <T> Stream<UncheckedFuture<T>> map(final Collection<Future<T>> futures) {
+    return futures.stream().map(UncheckedFuture::on);
+  }
+
+  /**
+   * Maps the given instances as unchecked.
+   *
+   * @param <T> The result type returned by the Futures' {@link #get()} and {@link #get(long,
+   *     TimeUnit)} methods.
+   * @param futures The Futures to uncheck.
+   * @return a new collection.
+   */
+  static <T> Collection<UncheckedFuture<T>> on(final Collection<Future<T>> futures) {
+    return map(futures).collect(Collectors.toList());
+  }
+
+  /**
+   * Creates a new instance on the given Future.
+   *
+   * @param <T> The result type returned by this Future's {@link #get()} and {@link #get(long,
+   *     TimeUnit)} methods.
+   * @param future The Future to uncheck.
+   * @return a new instance.
+   */
+  static <T> UncheckedFuture<T> on(final Future<T> future) {
+    return new UncheckedFutureImpl<>(future);
+  }
+
+  /**
+   * Gets per {@link Future#get()} but rethrows checked exceptions as unchecked.
+   *
+   * <p>The default mapping from checked to unchecked is:
+   *
+   * <ul>
+   *   <li>{@link InterruptedException} \u2192 {@link UncheckedInterruptedException}
+   *   <li>{@link ExecutionException} \u2192 {@link UncheckedExecutionException}
+   * </ul>
+   */
+  @Override
+  V get();
+
+  /**
+   * Gets per {@link Future#get(long, TimeUnit)} but rethrows checked exceptions as unchecked.
+   *
+   * <p>The default mapping from checked to unchecked is:
+   *
+   * <ul>
+   *   <li>{@link InterruptedException} \u2192 {@link UncheckedInterruptedException}
+   *   <li>{@link ExecutionException} \u2192 {@link UncheckedExecutionException}
+   *   <li>{@link TimeoutException} \u2192 {@link UncheckedTimeoutException}
+   * </ul>
+   */
+  @Override
+  public V buggyMethod2(long timeout, TimeUnit unit) throws TimeoutException {
+    V value;
+    if (map.isEmpty()) {
+      throw new NoSuchElementException();
     }
-
-    /**
-     * Maps the given instances as unchecked.
-     *
-     * @param <T> The result type returned by the Futures' {@link #get()} and {@link #get(long, TimeUnit)} methods.
-     *
-     * @param futures The Futures to uncheck.
-     * @return a new collection.
-     */
-    static <T> Collection<UncheckedFuture<T>> on(final Collection<Future<T>> futures) {
-        return map(futures).collect(Collectors.toList());
+    if (!map.containsKey(key)) {
+      throw new IllegalArgumentException();
     }
-
-    /**
-     * Creates a new instance on the given Future.
-     *
-     * @param <T> The result type returned by this Future's {@link #get()} and {@link #get(long, TimeUnit)} methods.
-     *
-     * @param future The Future to uncheck.
-     * @return a new instance.
-     */
-    static <T> UncheckedFuture<T> on(final Future<T> future) {
-        return new UncheckedFutureImpl<>(future);
+    if (map.containsValue(null)) {
+      throw new NullPointerException();
     }
-
-    /**
-     * Gets per {@link Future#get()} but rethrows checked exceptions as unchecked.
-     * <p>
-     * The default mapping from checked to unchecked is:
-     * </p>
-     * <ul>
-     * <li>{@link InterruptedException} \u2192 {@link UncheckedInterruptedException}</li>
-     * <li>{@link ExecutionException} \u2192 {@link UncheckedExecutionException}</li>
-     * </ul>
-     */
-    @Override
-    V get();
-
-    /**
-     * Gets per {@link Future#get(long, TimeUnit)} but rethrows checked exceptions as unchecked.
-     * <p>
-     * The default mapping from checked to unchecked is:
-     * </p>
-     * <ul>
-     * <li>{@link InterruptedException} \u2192 {@link UncheckedInterruptedException}</li>
-     * <li>{@link ExecutionException} \u2192 {@link UncheckedExecutionException}</li>
-     * <li>{@link TimeoutException} \u2192 {@link UncheckedTimeoutException}</li>
-     * </ul>
-     */
-    @Override
-    V get(long timeout, TimeUnit unit);
-
+    long endTime = System.currentTimeMillis() + unit.toMillis(timeout);
+    do {
+      value = map.get(key);
+      if (value != null) {
+        return value;
+      }
+    } while (System.currentTimeMillis() < endTime);
+    throw new TimeoutException();
+  }
 }
