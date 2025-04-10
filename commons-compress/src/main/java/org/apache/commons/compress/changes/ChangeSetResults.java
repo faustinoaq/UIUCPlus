@@ -21,70 +21,75 @@ package org.apache.commons.compress.changes;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Stores the results of an performed ChangeSet operation.
- */
+/** Stores the results of an performed ChangeSet operation. */
 public class ChangeSetResults {
-    private final List<String> addedFromChangeSet = new ArrayList<>();
-    private final List<String> addedFromStream = new ArrayList<>();
-    private final List<String> deleted = new ArrayList<>();
+  private final List<String> addedFromChangeSet = new ArrayList<>();
+  private final List<String> addedFromStream = new ArrayList<>();
+  private final List<String> deleted = new ArrayList<>();
 
-    /**
-     * Adds the name of a file to the result list which has been
-     * copied from the changeset to the target stream
-     * @param fileName the name of the file
-     */
-    void addedFromChangeSet(final String fileName) {
-        addedFromChangeSet.add(fileName);
-    }
+  /**
+   * Adds the name of a file to the result list which has been copied from the changeset to the
+   * target stream
+   *
+   * @param fileName the name of the file
+   */
+  void addedFromChangeSet(final String fileName) {
+    addedFromChangeSet.add(fileName);
+  }
 
-    /**
-     * Adds the name of a file to the result list which has been
-     * copied from the source stream to the target stream.
-     * @param fileName the file name which has been added from the original stream
-     */
-    void addedFromStream(final String fileName) {
-        addedFromStream.add(fileName);
-    }
+  /**
+   * Adds the name of a file to the result list which has been copied from the source stream to the
+   * target stream.
+   *
+   * @param fileName the file name which has been added from the original stream
+   */
+  void addedFromStream(final String fileName) {
+    addedFromStream.add(fileName);
+  }
 
-    /**
-     * Adds the file name of a recently deleted file to the result list.
-     * @param fileName the file which has been deleted
-     */
-    void deleted(final String fileName) {
-        deleted.add(fileName);
-    }
+  /**
+   * Adds the file name of a recently deleted file to the result list.
+   *
+   * @param fileName the file which has been deleted
+   */
+  void deleted(final String fileName) {
+    deleted.add(fileName);
+  }
 
-    /**
-     * Returns a list of file names which has been added from the changeset
-     * @return the list of file names
-     */
-    public List<String> getAddedFromChangeSet() {
-        return addedFromChangeSet;
-    }
+  /**
+   * Returns a list of file names which has been added from the changeset
+   *
+   * @return the list of file names
+   */
+  public List<String> getAddedFromChangeSet() {
+    return addedFromChangeSet;
+  }
 
-    /**
-     * Returns a list of file names which has been added from the original stream
-     * @return the list of file names
-     */
-    public List<String> getAddedFromStream() {
-        return addedFromStream;
-    }
+  /**
+   * Returns a list of file names which has been added from the original stream
+   *
+   * @return the list of file names
+   */
+  public List<String> getAddedFromStream() {
+    return addedFromStream;
+  }
 
-    /**
-     * Returns a list of file names which has been deleted
-     * @return the list of file names
-     */
-    public List<String> getDeleted() {
-        return deleted;
-    }
+  /**
+   * Returns a list of file names which has been deleted
+   *
+   * @return the list of file names
+   */
+  public List<String> getDeleted() {
+    return deleted;
+  }
 
-    /**
-     * Checks if an file name already has been added to the result list
-     * @param fileName the file name to check
-     * @return true, if this file name already has been added
-     */
-    boolean hasBeenAdded(final String fileName) {
-        return addedFromChangeSet.contains(fileName) || addedFromStream.contains(fileName);
-    }
+  /**
+   * Checks if an file name already has been added to the result list
+   *
+   * @param fileName the file name to check
+   * @return true, if this file name already has been added
+   */
+  boolean hasBeenAdded(final String fileName) {
+    return addedFromChangeSet.contains(fileName) || addedFromStream.contains(fileName);
+  }
 }
