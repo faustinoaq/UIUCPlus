@@ -17,67 +17,63 @@
 package org.apache.commons.collections4.functors;
 
 import java.io.Serializable;
-
 import org.apache.commons.collections4.Predicate;
 
 /**
- * Predicate implementation that returns true if the input is the same object
- * as the one stored in this predicate.
+ * Predicate implementation that returns true if the input is the same object as the one stored in
+ * this predicate.
  *
  * @since 3.0
  */
 public final class IdentityPredicate<T> implements Predicate<T>, Serializable {
 
-    /** Serial version UID */
-    private static final long serialVersionUID = -89901658494523293L;
+  /** Serial version UID */
+  private static final long serialVersionUID = -89901658494523293L;
 
-    /** The value to compare to */
-    private final T iValue;
+  /** The value to compare to */
+  private final T iValue;
 
-    /**
-     * Factory to create the identity predicate.
-     *
-     * @param <T> the type that the predicate queries
-     * @param object  the object to compare to
-     * @return the predicate
-     */
-    public static <T> Predicate<T> identityPredicate(final T object) {
-        if (object == null) {
-            return NullPredicate.<T>nullPredicate();
-        }
-        return new IdentityPredicate<>(object);
+  /**
+   * Factory to create the identity predicate.
+   *
+   * @param <T> the type that the predicate queries
+   * @param object the object to compare to
+   * @return the predicate
+   */
+  public static <T> Predicate<T> identityPredicate(final T object) {
+    if (object == null) {
+      return NullPredicate.<T>nullPredicate();
     }
+    return new IdentityPredicate<>(object);
+  }
 
-    /**
-     * Constructor that performs no validation.
-     * Use {@code identityPredicate} if you want that.
-     *
-     * @param object  the object to compare to
-     */
-    public IdentityPredicate(final T object) {
-        iValue = object;
-    }
+  /**
+   * Constructor that performs no validation. Use {@code identityPredicate} if you want that.
+   *
+   * @param object the object to compare to
+   */
+  public IdentityPredicate(final T object) {
+    iValue = object;
+  }
 
-    /**
-     * Evaluates the predicate returning true if the input object is identical to
-     * the stored object.
-     *
-     * @param object  the input object
-     * @return true if input is the same object as the stored value
-     */
-    @Override
-    public boolean evaluate(final T object) {
-        return iValue == object;
-    }
+  /**
+   * Evaluates the predicate returning true if the input object is identical to the stored object.
+   *
+   * @param object the input object
+   * @return true if input is the same object as the stored value
+   */
+  @Override
+  public boolean evaluate(final T object) {
+    return iValue == object;
+  }
 
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     * @since 3.1
-     */
-    public T getValue() {
-        return iValue;
-    }
-
+  /**
+   * Gets the value.
+   *
+   * @return the value
+   * @since 3.1
+   */
+  public T getValue() {
+    return iValue;
+  }
 }
