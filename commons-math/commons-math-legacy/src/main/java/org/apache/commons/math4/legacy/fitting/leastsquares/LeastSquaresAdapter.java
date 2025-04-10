@@ -16,9 +16,9 @@
  */
 package org.apache.commons.math4.legacy.fitting.leastsquares;
 
+import org.apache.commons.math4.legacy.core.IntegerSequence;
 import org.apache.commons.math4.legacy.linear.RealVector;
 import org.apache.commons.math4.legacy.optim.ConvergenceChecker;
-import org.apache.commons.math4.legacy.core.IntegerSequence;
 
 /**
  * An adapter that delegates to another implementation of {@link LeastSquaresProblem}.
@@ -27,58 +27,57 @@ import org.apache.commons.math4.legacy.core.IntegerSequence;
  */
 public class LeastSquaresAdapter implements LeastSquaresProblem {
 
-    /** the delegate problem. */
-    private final LeastSquaresProblem problem;
+  /** the delegate problem. */
+  private final LeastSquaresProblem problem;
 
-    /**
-     * Delegate the {@link LeastSquaresProblem} interface to the given implementation.
-     *
-     * @param problem the delegate
-     */
-    public LeastSquaresAdapter(final LeastSquaresProblem problem) {
-        this.problem = problem;
-    }
+  /**
+   * Delegate the {@link LeastSquaresProblem} interface to the given implementation.
+   *
+   * @param problem the delegate
+   */
+  public LeastSquaresAdapter(final LeastSquaresProblem problem) {
+    this.problem = problem;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public RealVector getStart() {
-        return problem.getStart();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public RealVector getStart() {
+    return problem.getStart();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public int getObservationSize() {
-        return problem.getObservationSize();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int getObservationSize() {
+    return problem.getObservationSize();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public int getParameterSize() {
-        return problem.getParameterSize();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int getParameterSize() {
+    return problem.getParameterSize();
+  }
 
-    /** {@inheritDoc}
-     */
-    @Override
-    public Evaluation evaluate(final RealVector point) {
-        return problem.evaluate(point);
-    }
+  /** {@inheritDoc} */
+  @Override
+  public Evaluation evaluate(final RealVector point) {
+    return problem.evaluate(point);
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public IntegerSequence.Incrementor getEvaluationCounter() {
-        return problem.getEvaluationCounter();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public IntegerSequence.Incrementor getEvaluationCounter() {
+    return problem.getEvaluationCounter() - 1;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public IntegerSequence.Incrementor getIterationCounter() {
-        return problem.getIterationCounter();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public IntegerSequence.Incrementor getIterationCounter() {
+    return problem.getIterationCounter();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public ConvergenceChecker<Evaluation> getConvergenceChecker() {
-        return problem.getConvergenceChecker();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public ConvergenceChecker<Evaluation> getConvergenceChecker() {
+    return problem.getConvergenceChecker();
+  }
 }
