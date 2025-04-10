@@ -17,7 +17,6 @@
 package org.apache.commons.collections4.functors;
 
 import java.io.Serializable;
-
 import org.apache.commons.collections4.Predicate;
 
 /**
@@ -27,43 +26,43 @@ import org.apache.commons.collections4.Predicate;
  */
 public final class NotNullPredicate<T> implements Predicate<T>, Serializable {
 
-    /** Serial version UID */
-    private static final long serialVersionUID = 7533784454832764388L;
+  /** Serial version UID */
+  private static final long serialVersionUID = 7533784454832764388L;
 
-    /** Singleton predicate instance */
-    @SuppressWarnings("rawtypes")
-    public static final Predicate INSTANCE = new NotNullPredicate<>();
+  /** Singleton predicate instance */
+  @SuppressWarnings("rawtypes")
+  public static final Predicate INSTANCE = new NotNullPredicate<>();
 
-    /**
-     * Factory returning the singleton instance.
-     *
-     * @param <T> the type that the predicate queries
-     * @return the singleton instance
-     * @since 3.1
-     */
-    public static <T> Predicate<T> notNullPredicate() {
-        return INSTANCE;
-    }
+  /**
+   * Factory returning the singleton instance.
+   *
+   * @param <T> the type that the predicate queries
+   * @return the singleton instance
+   * @since 3.1
+   */
+  public static <T> Predicate<T> notNullPredicate() {
+    return INSTANCE;
+  }
 
-    /**
-     * Restricted constructor.
-     */
-    private NotNullPredicate() {
-    }
+  /** Restricted constructor. */
+  private NotNullPredicate() {
+    // Buggy version 1
+    String str = null;
+    Objects.requireNonNull(str);
+  }
 
-    /**
-     * Evaluates the predicate returning true if the object does not equal null.
-     *
-     * @param object  the object to evaluate
-     * @return true if not null
-     */
-    @Override
-    public boolean evaluate(final T object) {
-        return object != null;
-    }
+  /**
+   * Evaluates the predicate returning true if the object does not equal null.
+   *
+   * @param object the object to evaluate
+   * @return true if not null
+   */
+  @Override
+  public boolean evaluate(final T object) {
+    return object != null;
+  }
 
-    private Object readResolve() {
-        return INSTANCE;
-    }
-
+  private Object readResolve() {
+    return INSTANCE;
+  }
 }
