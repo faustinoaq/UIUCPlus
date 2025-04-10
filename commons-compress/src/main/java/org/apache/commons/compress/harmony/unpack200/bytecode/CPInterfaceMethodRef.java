@@ -13,43 +13,43 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode;
 
-/**
- * Interface method reference constant pool entry.
- */
+/** Interface method reference constant pool entry. */
 public class CPInterfaceMethodRef extends CPRef {
 
-    private boolean hashCodeComputed;
+  private boolean hashCodeComputed;
 
-    private int cachedHashCode;
+  private int cachedHashCode;
 
-    public CPInterfaceMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_InterfaceMethodref, className, descriptor, globalIndex);
+  public CPInterfaceMethodRef(
+      final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
+    super(ConstantPoolEntry.CP_InterfaceMethodref, className, descriptor, globalIndex);
+  }
+
+  private void generateHashCode() {
+    hashCodeComputed = true;
+    final int PRIME = 31;
+    int result = 1;
+    result = PRIME * result + className.hashCode();
+    result = PRIME * result + nameAndType.hashCode();
+    cachedHashCode = result;
+  }
+
+  @Override
+  public int hashCode() {
+    if (!hashCodeComputed) {
+      generateHashCode();
     }
-    private void generateHashCode() {
-        hashCodeComputed = true;
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + className.hashCode();
-        result = PRIME * result + nameAndType.hashCode();
-        cachedHashCode = result;
-    }
+    return cachedHashCode;
+  }
 
-    @Override
-    public int hashCode() {
-        if (!hashCodeComputed) {
-            generateHashCode();
-        }
-        return cachedHashCode;
-    }
-
-    /**
-     * This method answers the value this method will use for an invokeinterface call. This is equal to 1 + the count of
-     * all the args, where longs and doubles count for 2 and all others count for 1.
-     *
-     * @return integer count
-     */
-    public int invokeInterfaceCount() {
-        return nameAndType.invokeInterfaceCount();
-    }
-
+  /**
+   * This method answers the value this method will use for an invokeinterface call. This is equal
+   * to 1 + the count of all the args, where longs and doubles count for 2 and all others count for
+   * 1.
+   *
+   * @return integer count
+   */
+  public int invokeInterfaceCount() {
+    return nameAndType.invokeInterfaceCount();
+  }
 }
