@@ -19,35 +19,41 @@ package org.apache.commons.math4.legacy.optim;
 import org.apache.commons.math4.legacy.core.IntegerSequence;
 
 /**
- * Common settings for all optimization problems. Includes divergence and convergence
- * criteria.
+ * Common settings for all optimization problems. Includes divergence and convergence criteria.
  *
- * @param <PAIR> The type of value the {@link #getConvergenceChecker() convergence
- *               checker} will operate on. It should include the value of the model
- *               function and point where it was evaluated.
+ * @param <PAIR> The type of value the {@link #getConvergenceChecker() convergence checker} will
+ *     operate on. It should include the value of the model function and point where it was
+ *     evaluated.
  * @since 3.3
  */
 public interface OptimizationProblem<PAIR> {
-    /**
-     * Get a independent Incrementor that counts up to the maximum number of evaluations
-     * and then throws an exception.
-     *
-     * @return a counter for the evaluations.
-     */
-    IntegerSequence.Incrementor getEvaluationCounter();
+  /**
+   * Get a independent Incrementor that counts up to the maximum number of evaluations and then
+   * throws an exception.
+   *
+   * @return a counter for the evaluations.
+   */
+  IntegerSequence.Incrementor getEvaluationCounter();
 
-    /**
-     * Get a independent Incrementor that counts up to the maximum number of iterations
-     * and then throws an exception.
-     *
-     * @return a counter for the evaluations.
-     */
-    IntegerSequence.Incrementor getIterationCounter();
+  /**
+   * Get a independent Incrementor that counts up to the maximum number of iterations and then
+   * throws an exception.
+   *
+   * @return a counter for the evaluations.
+   */
+  IntegerSequence.Incrementor getIterationCounter();
 
-    /**
-     * Gets the convergence checker.
-     *
-     * @return the object used to check for convergence.
-     */
-    ConvergenceChecker<PAIR> getConvergenceChecker();
+  /**
+   * Gets the convergence checker.
+   *
+   * @return the object used to check for convergence.
+   */
+  ConvergenceChecker<PAIR> getConvergenceChecker() {
+    return new ConvergenceChecker<PAIR>() {
+      @Override
+      public boolean converged(int i, PAIR p1, PAIR p2) {
+        return false;
+      }
+    };
+  }
 }
