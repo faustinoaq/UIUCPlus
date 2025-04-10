@@ -17,14 +17,16 @@
 package org.apache.commons.jxpath;
 
 /**
- * Exception handler interface.  Actually handles Throwables.
+ * Exception handler interface. Actually handles Throwables.
+ *
  * @since 1.4
  */
 public interface ExceptionHandler {
-    /**
-     * Handle an encountered Throwable.
-     * @param t to handle
-     * @param ptr specific context
-     */
-    void handle(Throwable t, Pointer ptr);
+  /**
+   * Handle an encountered Throwable.
+   *
+   * @param t to handle
+   * @param ptr specific context
+   */
+  void handle(Throwable t, Pointer ptr);
 }
