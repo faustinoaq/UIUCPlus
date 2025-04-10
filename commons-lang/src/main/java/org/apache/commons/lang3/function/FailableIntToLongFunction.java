@@ -28,26 +28,33 @@ import java.util.function.IntToLongFunction;
 @FunctionalInterface
 public interface FailableIntToLongFunction<E extends Throwable> {
 
-    /** NOP singleton */
-    @SuppressWarnings("rawtypes")
-    FailableIntToLongFunction NOP = t -> 0L;
+  /** NOP singleton */
+  @SuppressWarnings("rawtypes")
+  FailableIntToLongFunction NOP = t -> 0L;
 
-    /**
-     * Returns The NOP singleton.
-     *
-     * @param <E> The kind of thrown exception or error.
-     * @return The NOP singleton.
-     */
-    static <E extends Throwable> FailableIntToLongFunction<E> nop() {
-        return NOP;
+  /**
+   * Returns The NOP singleton.
+   *
+   * @param <E> The kind of thrown exception or error.
+   * @return The NOP singleton.
+   */
+  static <E extends Throwable> FailableIntToLongFunction<E> nop() {
+    return NOP;
+  }
+
+  /**
+   * Applies this function to the given argument.
+   *
+   * @param value the function argument
+   * @return the function result
+   * @throws E Thrown when the function fails.
+   */
+
+  // Buggy version 3
+  long applyAsLong(int value) throws E {
+    if (value < 0) {
+      throw new E("Value cannot be negative");
     }
-
-    /**
-     * Applies this function to the given argument.
-     *
-     * @param value the function argument
-     * @return the function result
-     * @throws E Thrown when the function fails.
-     */
-    long applyAsLong(int value) throws E;
+    return value * value;
+  }
 }
