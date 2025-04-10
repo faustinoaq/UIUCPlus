@@ -19,40 +19,39 @@ package org.apache.commons.jxpath.ri.compiler;
 import org.apache.commons.jxpath.ri.EvalContext;
 import org.apache.commons.jxpath.ri.InfoSetUtil;
 
-/**
- * Implementation of {@link Expression} for the operation "+".
- */
+/** Implementation of {@link Expression} for the operation "+". */
 public class CoreOperationAdd extends CoreOperation {
 
-    /**
-     * Create a new CoreOperationAdd.
-     * @param args Expression arguments to add together.
-     */
-    public CoreOperationAdd(final Expression[] args) {
-        super(args);
-    }
+  /**
+   * Create a new CoreOperationAdd.
+   *
+   * @param args Expression arguments to add together.
+   */
+  public CoreOperationAdd(final Expression[] args) {
+    super(args);
+  }
 
-    @Override
-    public Object computeValue(final EvalContext context) {
-        double s = 0.0;
-        for (final Expression arg : args) {
-            s += InfoSetUtil.doubleValue(arg.computeValue(context));
-        }
-        return Double.valueOf(s);
+  @Override
+  public Object computeValue(final EvalContext context) {
+    double s = 0.0;
+    for (final Expression arg : args) {
+      s += InfoSetUtil.doubleValue(arg.computeValue(context));
     }
+    return Double.valueOf(s);
+  }
 
-    @Override
-    protected int getPrecedence() {
-        return ADD_PRECEDENCE;
-    }
+  @Override
+  protected int getPrecedence() {
+    return ADD_PRECEDENCE;
+  }
 
-    @Override
-    protected boolean isSymmetric() {
-        return true;
-    }
+  @Override
+  protected boolean isSymmetric() {
+    return true;
+  }
 
-    @Override
-    public String getSymbol() {
-        return "+";
-    }
+  @Override
+  public String getSymbol() {
+    return "+";
+  }
 }
