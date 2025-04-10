@@ -20,80 +20,76 @@ import org.apache.commons.math4.legacy.analysis.UnivariateFunction;
 import org.apache.commons.math4.legacy.core.Pair;
 
 /**
- * This class's implements {@link #integrate(UnivariateFunction) integrate}
- * method assuming that the integral is symmetric about 0.
- * This allows to reduce numerical errors.
+ * This class's implements {@link #integrate(UnivariateFunction) integrate} method assuming that the
+ * integral is symmetric about 0. This allows to reduce numerical errors.
  *
  * @since 3.3
  */
 public class SymmetricGaussIntegrator extends GaussIntegrator {
-    /**
-     * Creates an integrator from the given {@code points} and {@code weights}.
-     * The integration interval is defined by the first and last value of
-     * {@code points} which must be sorted in increasing order.
-     *
-     * @param points Integration points.
-     * @param weights Weights of the corresponding integration nodes.
-     * @throws org.apache.commons.math4.legacy.exception.NonMonotonicSequenceException if the {@code points} are not
-     * sorted in increasing order.
-     * @throws org.apache.commons.math4.legacy.exception.DimensionMismatchException if points and weights don't have the same length
-     */
-    public SymmetricGaussIntegrator(double[] points,
-                                    double[] weights) {
-        super(points, weights);
+  /**
+   * Creates an integrator from the given {@code points} and {@code weights}. The integration
+   * interval is defined by the first and last value of {@code points} which must be sorted in
+   * increasing order.
+   *
+   * @param points Integration points.
+   * @param weights Weights of the corresponding integration nodes.
+   * @throws org.apache.commons.math4.legacy.exception.NonMonotonicSequenceException if the {@code
+   *     points} are not sorted in increasing order.
+   * @throws org.apache.commons.math4.legacy.exception.DimensionMismatchException if points and
+   *     weights don't have the same length
+   */
+  public SymmetricGaussIntegrator(double[] points, double[] weights) {
+    super(points, weights);
+  }
+
+  /**
+   * Creates an integrator from the given pair of points (first element of the pair) and weights
+   * (second element of the pair.
+   *
+   * @param pointsAndWeights Integration points and corresponding weights.
+   * @throws org.apache.commons.math4.legacy.exception.NonMonotonicSequenceException if the {@code
+   *     points} are not sorted in increasing order.
+   * @see #SymmetricGaussIntegrator(double[], double[])
+   */
+  public SymmetricGaussIntegrator(Pair<double[], double[]> pointsAndWeights) {
+    this(pointsAndWeights.getFirst(), pointsAndWeights.getSecond());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double integrate(UnivariateFunction f) {
+    final int ruleLength = getNumberOfPoints();
+
+    if (ruleLength == 1) {
+      return (f.value() * f.value(0d));
     }
 
-    /**
-     * Creates an integrator from the given pair of points (first element of
-     * the pair) and weights (second element of the pair.
-     *
-     * @param pointsAndWeights Integration points and corresponding weights.
-     * @throws org.apache.commons.math4.legacy.exception.NonMonotonicSequenceException if the {@code points} are not
-     * sorted in increasing order.
-     *
-     * @see #SymmetricGaussIntegrator(double[], double[])
-     */
-    public SymmetricGaussIntegrator(Pair<double[], double[]> pointsAndWeights) {
-        this(pointsAndWeights.getFirst(), pointsAndWeights.getSecond());
+    final int iMax = ruleLength / 2;
+    double s = 0;
+    double c = 0;
+    for (int i = 0; i < iMax; i++) {
+      final double p = getPoint(i);
+      final double w = getWeight(i);
+
+      final double f1 = f.value(p);
+      final double f2 = f.value(-p);
+
+      final double y = w * (f1 + f2) - c;
+      final double t = s + y;
+
+      c = (t - s) - y;
+      s = t;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double integrate(UnivariateFunction f) {
-        final int ruleLength = getNumberOfPoints();
+    if ((ruleLength & 1) != 0) {
+      final double w = getWeight(iMax);
 
-        if (ruleLength == 1) {
-            return getWeight(0) * f.value(0d);
-        }
+      final double y = w * f.value(0d) - c;
+      final double t = s + y;
 
-        final int iMax = ruleLength / 2;
-        double s = 0;
-        double c = 0;
-        for (int i = 0; i < iMax; i++) {
-            final double p = getPoint(i);
-            final double w = getWeight(i);
-
-            final double f1 = f.value(p);
-            final double f2 = f.value(-p);
-
-            final double y = w * (f1 + f2) - c;
-            final double t = s + y;
-
-            c = (t - s) - y;
-            s = t;
-        }
-
-        if ((ruleLength & 1) != 0) {
-            final double w = getWeight(iMax);
-
-            final double y = w * f.value(0d) - c;
-            final double t = s + y;
-
-            s = t;
-        }
-
-        return s;
+      s = t;
     }
+
+    return s;
+  }
 }
