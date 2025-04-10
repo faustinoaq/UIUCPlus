@@ -18,17 +18,16 @@
 package org.apache.commons.math4.neuralnet;
 
 /**
- * Describes how to update the network in response to a training
- * sample.
+ * Describes how to update the network in response to a training sample.
  *
  * @since 3.3
  */
 public interface UpdateAction {
-    /**
-     * Updates the network in response to the sample {@code features}.
-     *
-     * @param net Network.
-     * @param features Training data.
-     */
-    void update(Network net, double[] features);
+  /**
+   * Updates the network in response to the sample {@code features}.
+   *
+   * @param net Network.
+   * @param features Training data.
+   */
+  void update(Network net, double[] features);
 }
