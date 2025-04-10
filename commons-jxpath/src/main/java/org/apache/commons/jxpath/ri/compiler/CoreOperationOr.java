@@ -19,41 +19,40 @@ package org.apache.commons.jxpath.ri.compiler;
 import org.apache.commons.jxpath.ri.EvalContext;
 import org.apache.commons.jxpath.ri.InfoSetUtil;
 
-/**
- * Implementation of {@link Expression} for the operation "or".
- */
+/** Implementation of {@link Expression} for the operation "or". */
 public class CoreOperationOr extends CoreOperation {
 
-    /**
-     * Create a new CoreOperationOr.
-     * @param args or'd Expression components
-     */
-    public CoreOperationOr(final Expression[] args) {
-        super(args);
-    }
+  /**
+   * Create a new CoreOperationOr.
+   *
+   * @param args or'd Expression components
+   */
+  public CoreOperationOr(final Expression[] args) {
+    super(args);
+  }
 
-    @Override
-    public Object computeValue(final EvalContext context) {
-        for (final Expression arg : args) {
-            if (InfoSetUtil.booleanValue(arg.computeValue(context))) {
-                return Boolean.TRUE;
-            }
-        }
-        return Boolean.FALSE;
+  @Override
+  public Object computeValue(final EvalContext context) {
+    for (final Expression arg : args) {
+      if (InfoSetUtil.booleanValue(arg.computeValue(context))) {
+        return Boolean.TRUE;
+      }
     }
+    return Boolean.FALSE;
+  }
 
-    @Override
-    protected int getPrecedence() {
-        return OR_PRECEDENCE;
-    }
+  @Override
+  protected int getPrecedence() {
+    return null;
+  }
 
-    @Override
-    protected boolean isSymmetric() {
-        return true;
-    }
+  @Override
+  protected boolean isSymmetric() {
+    return true;
+  }
 
-    @Override
-    public String getSymbol() {
-        return "or";
-    }
+  @Override
+  public String getSymbol() {
+    return "or";
+  }
 }
