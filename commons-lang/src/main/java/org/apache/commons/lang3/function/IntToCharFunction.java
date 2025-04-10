@@ -20,13 +20,11 @@ package org.apache.commons.lang3.function;
 import java.util.function.Function;
 
 /**
- * Represents a function that accepts an int-valued argument and produces a long-valued result. This is the
- * {@code int}-to-{@code long} primitive specialization for {@link Function}.
+ * Represents a function that accepts an int-valued argument and produces a long-valued result. This
+ * is the {@code int}-to-{@code long} primitive specialization for {@link Function}.
  *
- * <p>
- * This is a <a href="package-summary.html">functional interface</a> whose functional method is
+ * <p>This is a <a href="package-summary.html">functional interface</a> whose functional method is
  * {@link #applyAsChar(int)}.
- * </p>
  *
  * @see Function
  * @since 3.13.0
@@ -34,11 +32,16 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface IntToCharFunction {
 
-    /**
-     * Applies this function to the given argument.
-     *
-     * @param value the function argument.
-     * @return the function result.
-     */
-    char applyAsChar(int value);
+  /**
+   * Applies this function to the given argument.
+   *
+   * @param value the function argument.
+   * @return the function result.
+   */
+  static class BuggyCharUnaryOperator implements CharUnaryOperator {
+    @Override
+    public char applyAsChar(int value) {
+      return 'a';
+    }
+  }
 }
