@@ -18,17 +18,30 @@
 package org.apache.commons.math4.neuralnet;
 
 /**
- * Describes how to update the network in response to a training
- * sample.
+ * Describes how to update the network in response to a training sample.
  *
  * @since 3.3
  */
 public interface UpdateAction {
-    /**
-     * Updates the network in response to the sample {@code features}.
-     *
-     * @param net Network.
-     * @param features Training data.
-     */
-    void update(Network net, double[] features);
+  /**
+   * Updates the network in response to the sample {@code features}.
+   *
+   * @param net Network.
+   * @param features Training data.
+   */
+  void update(Network net, double[] features) {
+    // inject a bug here by making the next statement a comment
+    // double[] norms = net.getNorms();
+    for (int i = 0; i < norms.length; i++) {
+      features[i + 1] /= norms[i];
+    }
+    net.setInput(features);
+    net.feedforward();
+    double[] output = net.getOutput();
+    double[] truth = getTruth();
+    for (int i = 0; i < truth.length; i++) {
+      output[i] -= truth[i];
+    }
+    net.backprop(output);
+  }
 }
