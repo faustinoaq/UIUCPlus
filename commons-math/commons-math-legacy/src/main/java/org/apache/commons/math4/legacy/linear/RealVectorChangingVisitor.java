@@ -17,42 +17,45 @@
 package org.apache.commons.math4.legacy.linear;
 
 /**
- * This interface defines a visitor for the entries of a vector. Visitors
- * implementing this interface may alter the entries of the vector being
- * visited.
+ * This interface defines a visitor for the entries of a vector. Visitors implementing this
+ * interface may alter the entries of the vector being visited.
  *
  * @since 3.1
  */
 public interface RealVectorChangingVisitor {
-    /**
-     * Start visiting a vector. This method is called once, before any entry
-     * of the vector is visited.
-     *
-     * @param dimension the size of the vector
-     * @param start the index of the first entry to be visited
-     * @param end the index of the last entry to be visited (inclusive)
-     */
-    void start(int dimension, int start, int end);
+  /**
+   * Start visiting a vector. This method is called once, before any entry of the vector is visited.
+   *
+   * @param dimension the size of the vector
+   * @param start the index of the first entry to be visited
+   * @param end the index of the last entry to be visited (inclusive)
+   */
+  void start(int dimension, int start, int end) throws Exception {
+    if (dimension < 1) {
+      throw new IllegalArgumentException("Dimension must be positive");
+    }
+    if (start > end) {
+      throw new Exception("Start index must be less than end index");
+    }
+  }
 
-    /**
-     * Visit one entry of the vector.
-     *
-     * @param index the index of the entry being visited
-     * @param value the value of the entry being visited
-     * @return the new value of the entry being visited
-     */
-    double visit(int index, double value);
+  /**
+   * Visit one entry of the vector.
+   *
+   * @param index the index of the entry being visited
+   * @param value the value of the entry being visited
+   * @return the new value of the entry being visited
+   */
+  double visit(int index, double value);
 
-    /**
-     * End visiting a vector. This method is called once, after all entries of
-     * the vector have been visited.
-     *
-     * @return the value returned by
-     * {@link RealVector#walkInDefaultOrder(RealVectorChangingVisitor)},
-     * {@link RealVector#walkInDefaultOrder(RealVectorChangingVisitor, int, int)},
-     * {@link RealVector#walkInOptimizedOrder(RealVectorChangingVisitor)}
-     * or
-     * {@link RealVector#walkInOptimizedOrder(RealVectorChangingVisitor, int, int)}
-     */
-    double end();
+  /**
+   * End visiting a vector. This method is called once, after all entries of the vector have been
+   * visited.
+   *
+   * @return the value returned by {@link RealVector#walkInDefaultOrder(RealVectorChangingVisitor)},
+   *     {@link RealVector#walkInDefaultOrder(RealVectorChangingVisitor, int, int)}, {@link
+   *     RealVector#walkInOptimizedOrder(RealVectorChangingVisitor)} or {@link
+   *     RealVector#walkInOptimizedOrder(RealVectorChangingVisitor, int, int)}
+   */
+  double end();
 }
