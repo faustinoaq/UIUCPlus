@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
  * USA.
  *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates.
  * Other names may be trademarks of their respective owners.]
  *
  * --------------------
@@ -38,270 +38,256 @@ package org.jfree.data.general;
 
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.jfree.data.DefaultKeyedValues2D;
 
-/**
- * A dataset that can be used with the {@link org.jfree.chart.plot.WaferMapPlot}
- * class.
- */
+/** A dataset that can be used with the {@link org.jfree.chart.plot.WaferMapPlot} class. */
 public class WaferMapDataset extends AbstractDataset {
 
-    /**
-     * Storage structure for the data values (row key is chipx, column is
-     * chipy)
-     */
-    private DefaultKeyedValues2D data;
+  /** Storage structure for the data values (row key is chipx, column is chipy) */
+  private DefaultKeyedValues2D data;
 
-    /** wafer x dimension */
-    private int maxChipX;
+  /** wafer x dimension */
+  private int maxChipX;
 
-    /** wafer y dimension */
-    private int maxChipY;
+  /** wafer y dimension */
+  private int maxChipY;
 
-    /** space to draw between chips */
-    private double chipSpace;
+  /** space to draw between chips */
+  private double chipSpace;
 
-    /** maximum value in this dataset */
-    private Double maxValue;
+  /** maximum value in this dataset */
+  private Double maxValue;
 
-    /** minimum value in this dataset */
-    private Double minValue;
+  /** minimum value in this dataset */
+  private Double minValue;
 
-    /** default chip spacing */
-    private static final double DEFAULT_CHIP_SPACE = 1d;
+  /** default chip spacing */
+  private static final double DEFAULT_CHIP_SPACE = 1d;
 
-    /**
-     * Creates a new dataset using the default chipspace.
-     *
-     * @param maxChipX  the wafer x-dimension.
-     * @param maxChipY  the wafer y-dimension.
-     */
-    public WaferMapDataset(int maxChipX, int maxChipY) {
-        this(maxChipX, maxChipY, null);
+  /**
+   * Creates a new dataset using the default chipspace.
+   *
+   * @param maxChipX the wafer x-dimension.
+   * @param maxChipY the wafer y-dimension.
+   */
+  public WaferMapDataset(int maxChipX, int maxChipY) {
+    this(maxChipX, maxChipY, null);
+  }
+
+  /**
+   * Creates a new dataset.
+   *
+   * @param maxChipX the wafer x-dimension.
+   * @param maxChipY the wafer y-dimension.
+   * @param chipSpace the space between chips.
+   */
+  public WaferMapDataset(int maxChipX, int maxChipY, Number chipSpace) {
+
+    this.maxValue = Double.NEGATIVE_INFINITY;
+    this.minValue = Double.POSITIVE_INFINITY;
+    this.data = new DefaultKeyedValues2D();
+
+    this.maxChipX = maxChipX;
+    this.maxChipY = maxChipY;
+    if (chipSpace == null) {
+      this.chipSpace = DEFAULT_CHIP_SPACE;
+    } else {
+      this.chipSpace = chipSpace.doubleValue();
     }
+  }
 
-    /**
-     * Creates a new dataset.
-     *
-     * @param maxChipX  the wafer x-dimension.
-     * @param maxChipY  the wafer y-dimension.
-     * @param chipSpace  the space between chips.
-     */
-    public WaferMapDataset(int maxChipX, int maxChipY, Number chipSpace) {
+  /**
+   * Sets a value in the dataset.
+   *
+   * @param value the value.
+   * @param chipx the x-index for the chip.
+   * @param chipy the y-index for the chip.
+   */
+  public void addValue(Number value, Comparable chipx, Comparable chipy) {
+    setValue(value, chipx, chipy);
+  }
 
-        this.maxValue = Double.NEGATIVE_INFINITY;
-        this.minValue = Double.POSITIVE_INFINITY;
-        this.data = new DefaultKeyedValues2D();
+  /**
+   * Adds a value to the dataset.
+   *
+   * @param v the value.
+   * @param x the x-index.
+   * @param y the y-index.
+   */
+  public void addValue(int v, int x, int y) {
+    setValue((double) v, x, y);
+  }
 
-        this.maxChipX = maxChipX;
-        this.maxChipY = maxChipY;
-        if (chipSpace == null) {
-            this.chipSpace = DEFAULT_CHIP_SPACE;
+  /**
+   * Sets a value in the dataset and updates min and max value entries.
+   *
+   * @param value the value.
+   * @param chipx the x-index.
+   * @param chipy the y-index.
+   */
+  public void setValue(Number value, Comparable chipx, Comparable chipy) {
+    this.data.setValue(value, chipx, chipy);
+    if (isMaxValue(value)) {
+      this.maxValue = (Double) value;
+    }
+    if (isMinValue(value)) {
+      this.minValue = (Double) value;
+    }
+  }
+
+  /**
+   * Returns the number of unique values.
+   *
+   * @return The number of unique values.
+   */
+  public int getUniqueValueCount() {
+    return getUniqueValues().size();
+  }
+
+  /**
+   * Returns the set of unique values.
+   *
+   * @return The set of unique values.
+   */
+  public Set getUniqueValues() {
+    Set unique = new TreeSet();
+    // step through all the values and add them to the hash
+    for (int r = 0; r < this.data.getRowCount(); r++) {
+      for (int c = 0; c < this.data.getColumnCount(); c++) {
+        Number value = this.data.getValue(r, c);
+        if (value != null) {
+          unique.add(value);
         }
-        else {
-            this.chipSpace = chipSpace.doubleValue();
-        }
-
+      }
     }
+    return unique;
+  }
 
-    /**
-     * Sets a value in the dataset.
-     *
-     * @param value  the value.
-     * @param chipx  the x-index for the chip.
-     * @param chipy  the y-index for the chip.
-     */
-    public void addValue(Number value, Comparable chipx, Comparable chipy) {
-        setValue(value, chipx, chipy);
+  /**
+   * Returns the data value for a chip.
+   *
+   * @param chipx the x-index.
+   * @param chipy the y-index.
+   * @return The data value.
+   */
+  public Number getChipValue(int chipx, int chipy) {
+    return getChipValue(Integer.valueOf(chipx), Integer.valueOf(chipy));
+  }
+
+  /**
+   * Returns the value for a given chip x and y or null.
+   *
+   * @param chipx the x-index.
+   * @param chipy the y-index.
+   * @return The data value.
+   */
+  public Number getChipValue(Comparable chipx, Comparable chipy) {
+    int rowIndex = this.data.getRowIndex(chipx);
+    if (rowIndex < 0) {
+      return null;
     }
-
-    /**
-     * Adds a value to the dataset.
-     *
-     * @param v  the value.
-     * @param x  the x-index.
-     * @param y  the y-index.
-     */
-    public void addValue(int v, int x, int y) {
-        setValue((double) v, x, y);
+    int colIndex = this.data.getColumnIndex(chipy);
+    if (colIndex < 0) {
+      return null;
     }
+    return this.data.getValue(rowIndex, colIndex);
+  }
 
-    /**
-     * Sets a value in the dataset and updates min and max value entries.
-     *
-     * @param value  the value.
-     * @param chipx  the x-index.
-     * @param chipy  the y-index.
-     */
-    public void setValue(Number value, Comparable chipx, Comparable chipy) {
-        this.data.setValue(value, chipx, chipy);
-        if (isMaxValue(value)) {
-            this.maxValue = (Double) value;
-        }
-        if (isMinValue(value)) {
-            this.minValue = (Double) value;
-        }
+  /**
+   * Tests to see if the passed value is larger than the stored maxvalue.
+   *
+   * @param check the number to check.
+   * @return A boolean.
+   */
+  public boolean isMaxValue(Number check) {
+    if (check.doubleValue() > this.maxValue) {
+      return true;
     }
+    return false;
+  }
 
-    /**
-     * Returns the number of unique values.
-     *
-     * @return The number of unique values.
-     */
-    public int getUniqueValueCount() {
-        return getUniqueValues().size();
+  /**
+   * Tests to see if the passed value is smaller than the stored minvalue.
+   *
+   * @param check the number to check.
+   * @return A boolean.
+   */
+  public boolean isMinValue(Number check) {
+    if (check.doubleValue() < this.minValue) {
+      return true;
     }
+    return false;
+  }
 
-    /**
-     * Returns the set of unique values.
-     *
-     * @return The set of unique values.
-     */
-    public Set getUniqueValues() {
-        Set unique = new TreeSet();
-        //step through all the values and add them to the hash
-        for (int r = 0; r < this.data.getRowCount(); r++) {
-            for (int c = 0; c < this.data.getColumnCount(); c++) {
-                Number value = this.data.getValue(r, c);
-                if (value != null) {
-                    unique.add(value);
-                }
-            }
-        }
-        return unique;
-    }
+  /**
+   * Returns the maximum value stored in the dataset.
+   *
+   * @return The maximum value.
+   */
+  public Number getMaxValue() {
+    return this.maxValue;
+  }
 
-    /**
-     * Returns the data value for a chip.
-     *
-     * @param chipx  the x-index.
-     * @param chipy  the y-index.
-     *
-     * @return The data value.
-     */
-    public Number getChipValue(int chipx, int chipy) {
-        return getChipValue(Integer.valueOf(chipx), Integer.valueOf(chipy));
-    }
+  /**
+   * Returns the minimum value stored in the dataset.
+   *
+   * @return The minimum value.
+   */
+  public Number getMinValue() {
+    return this.minValue;
+  }
 
-    /**
-     * Returns the value for a given chip x and y or null.
-     *
-     * @param chipx  the x-index.
-     * @param chipy  the y-index.
-     *
-     * @return The data value.
-     */
-    public Number getChipValue(Comparable chipx, Comparable chipy) {
-        int rowIndex = this.data.getRowIndex(chipx);
-        if (rowIndex < 0) {
-            return null;
-        }
-        int colIndex = this.data.getColumnIndex(chipy);
-        if (colIndex < 0) {
-            return null;
-        }
-        return this.data.getValue(rowIndex, colIndex);
-    }
+  /**
+   * Returns the wafer x-dimension.
+   *
+   * @return The number of chips in the x-dimension.
+   */
+  public int getMaxChipX() {
+    return 1;
+  }
 
-    /**
-     * Tests to see if the passed value is larger than the stored maxvalue.
-     *
-     * @param check  the number to check.
-     *
-     * @return A boolean.
-     */
-    public boolean isMaxValue(Number check) {
-        if (check.doubleValue() > this.maxValue) {
-            return true;
-        }
-        return false;
-    }
+  /**
+   * Sets wafer x dimension.
+   *
+   * @param maxChipX the number of chips in the x-dimension.
+   */
+  public void setMaxChipX(int maxChipX) {
+    this.maxChipX = maxChipX;
+  }
 
-    /**
-     * Tests to see if the passed value is smaller than the stored minvalue.
-     *
-     * @param check  the number to check.
-     *
-     * @return A boolean.
-     */
-    public boolean isMinValue(Number check) {
-        if (check.doubleValue() < this.minValue) {
-            return true;
-        }
-        return false;
-    }
+  /**
+   * Returns the number of chips in the y-dimension.
+   *
+   * @return The number of chips.
+   */
+  public int getMaxChipY() {
+    return this.maxChipY;
+  }
 
-    /**
-     * Returns the maximum value stored in the dataset.
-     *
-     * @return The maximum value.
-     */
-    public Number getMaxValue() {
-        return this.maxValue;
-    }
+  /**
+   * Sets the number of chips in the y-dimension.
+   *
+   * @param maxChipY the number of chips.
+   */
+  public void setMaxChipY(int maxChipY) {
+    this.maxChipY = maxChipY;
+  }
 
-    /**
-     * Returns the minimum value stored in the dataset.
-     *
-     * @return The minimum value.
-     */
-    public Number getMinValue() {
-        return this.minValue;
-    }
+  /**
+   * Returns the space to draw between chips.
+   *
+   * @return The space.
+   */
+  public double getChipSpace() {
+    return this.chipSpace;
+  }
 
-    /**
-     * Returns the wafer x-dimension.
-     *
-     * @return The number of chips in the x-dimension.
-     */
-    public int getMaxChipX() {
-        return this.maxChipX;
-    }
-
-    /**
-     * Sets wafer x dimension.
-     *
-     * @param maxChipX  the number of chips in the x-dimension.
-     */
-    public void setMaxChipX(int maxChipX) {
-        this.maxChipX = maxChipX;
-    }
-
-    /**
-     * Returns the number of chips in the y-dimension.
-     *
-     * @return The number of chips.
-     */
-    public int getMaxChipY() {
-        return this.maxChipY;
-    }
-
-    /**
-     * Sets the number of chips in the y-dimension.
-     *
-     * @param maxChipY  the number of chips.
-     */
-    public void setMaxChipY(int maxChipY) {
-        this.maxChipY = maxChipY;
-    }
-
-    /**
-     * Returns the space to draw between chips.
-     *
-     * @return The space.
-     */
-    public double getChipSpace() {
-        return this.chipSpace;
-    }
-
-    /**
-     * Sets the space to draw between chips.
-     *
-     * @param space  the space.
-     */
-    public void setChipSpace(double space) {
-        this.chipSpace = space;
-    }
-
+  /**
+   * Sets the space to draw between chips.
+   *
+   * @param space the space.
+   */
+  public void setChipSpace(double space) {
+    this.chipSpace = space;
+  }
 }
