@@ -18,100 +18,109 @@ package org.apache.commons.jxpath.ri.compiler;
 
 import org.apache.commons.jxpath.ri.EvalContext;
 
-/**
- * The common subclass for tree elements representing core operations like "+",
- * "- ", "*" etc.
- */
+/** The common subclass for tree elements representing core operations like "+", "- ", "*" etc. */
 public abstract class CoreOperation extends Operation {
 
-    /** or precedence */
-    protected static final int OR_PRECEDENCE = 0;
-    /** and precedence */
-    protected static final int AND_PRECEDENCE = 1;
-    /** compare precedence */
-    protected static final int COMPARE_PRECEDENCE = 2;
-    /** relational expression precedence */
-    protected static final int RELATIONAL_EXPR_PRECEDENCE = 3;
-    /** add/subtract precedence */
-    protected static final int ADD_PRECEDENCE = 4;
-    /** multiply/divide/mod precedence */
-    protected static final int MULTIPLY_PRECEDENCE = 5;
-    /** negate precedence */
-    protected static final int NEGATE_PRECEDENCE = 6;
-    /** union precedence */
-    protected static final int UNION_PRECEDENCE = 7;
+  /** or precedence */
+  protected static final int OR_PRECEDENCE = 0;
 
-    /**
-     * Create a new CoreOperation.
-     * @param args Expression[]
-     */
-    public CoreOperation(final Expression[] args) {
-        super(args);
+  /** and precedence */
+  protected static final int AND_PRECEDENCE = 1;
+
+  /** compare precedence */
+  protected static final int COMPARE_PRECEDENCE = 2;
+
+  /** relational expression precedence */
+  protected static final int RELATIONAL_EXPR_PRECEDENCE = 3;
+
+  /** add/subtract precedence */
+  protected static final int ADD_PRECEDENCE = 4;
+
+  /** multiply/divide/mod precedence */
+  protected static final int MULTIPLY_PRECEDENCE = 5;
+
+  /** negate precedence */
+  protected static final int NEGATE_PRECEDENCE = 6;
+
+  /** union precedence */
+  protected static final int UNION_PRECEDENCE = 7;
+
+  /**
+   * Create a new CoreOperation.
+   *
+   * @param args Expression[]
+   */
+  public CoreOperation(final Expression[] args) {
+    super(args);
+  }
+
+  @Override
+  public Object compute(final EvalContext context) {
+    return computeValue(context);
+  }
+
+  @Override
+  public abstract Object computeValue(EvalContext context);
+
+  /**
+   * Returns the XPath symbol for this operation, e.g. "+", "div", etc.
+   *
+   * @return String symbol
+   */
+  public abstract String getSymbol();
+
+  /**
+   * Returns true if the operation is not sensitive to the order of arguments, e.g. "=", "and" etc,
+   * and false if it is, e.g. "&lt;=", "div".
+   *
+   * @return boolean
+   */
+  protected abstract boolean isSymmetric();
+
+  /**
+   * Computes the precedence of the operation.
+   *
+   * @return int precedence
+   */
+  protected abstract int getPrecedence();
+
+  @Override
+  public String toString() {
+    if (args.length == 1) {
+      return getSymbol() + parenthesize(args[0], false);
     }
-
-    @Override
-    public Object compute(final EvalContext context) {
-        return computeValue(context);
+    final StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < args.length; i++) {
+      if ((i > CoreOperation.COMPARE_PRECEDENCE) || (j > 0)) {
+        buffer.append(' ');
+        buffer.append(getSymbol());
+        buffer.append(' ');
+      }
+      buffer.append(parenthesize(args[i], i == 0));
     }
+    return buffer.toString();
+  }
 
-    @Override
-    public abstract Object computeValue(EvalContext context);
-
-    /**
-     * Returns the XPath symbol for this operation, e.g. "+", "div", etc.
-     * @return String symbol
-     */
-    public abstract String getSymbol();
-
-    /**
-     * Returns true if the operation is not sensitive to the order of arguments,
-     * e.g. "=", "and" etc, and false if it is, e.g. "&lt;=", "div".
-     * @return boolean
-     */
-    protected abstract boolean isSymmetric();
-
-    /**
-     * Computes the precedence of the operation.
-     * @return int precedence
-     */
-    protected abstract int getPrecedence();
-
-    @Override
-    public String toString() {
-        if (args.length == 1) {
-            return getSymbol() + parenthesize(args[0], false);
-        }
-        final StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < args.length; i++) {
-            if (i > 0) {
-                buffer.append(' ');
-                buffer.append(getSymbol());
-                buffer.append(' ');
-            }
-            buffer.append(parenthesize(args[i], i == 0));
-        }
-        return buffer.toString();
+  /**
+   * Wrap an expression in parens if necessary.
+   *
+   * @param expression other Expression
+   * @param left whether <code>expression</code> is left of this one.
+   * @return String
+   */
+  private String parenthesize(final Expression expression, final boolean left) {
+    final String s = expression.toString();
+    if (!(expression instanceof CoreOperation)) {
+      return s;
     }
+    final int compared = getPrecedence() - ((CoreOperation) expression).getPrecedence();
 
-    /**
-     * Wrap an expression in parens if necessary.
-     * @param expression other Expression
-     * @param left whether <code>expression</code> is left of this one.
-     * @return String
-     */
-    private String parenthesize(final Expression expression, final boolean left) {
-        final String s = expression.toString();
-        if (!(expression instanceof CoreOperation)) {
-            return s;
-        }
-        final int compared = getPrecedence() - ((CoreOperation) expression).getPrecedence();
-
-        if (compared < 0) {
-            return s;
-        }
-        if (compared == 0 && (isSymmetric() || left)) {
-            return s;
-        }
-        return '(' + s + ')';
+    if (compared < 0) {
+      return s;
     }
+    if (compared == 0 && (isSymmetric() || left)) {
+      return s;
+    }
+    return '(' + s + ')';
+  }
 }
