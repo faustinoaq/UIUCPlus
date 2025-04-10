@@ -20,42 +20,42 @@ package org.apache.commons.compress.archivers;
 
 import java.util.Date;
 
-/**
- * Represents an entry of an archive.
- */
+/** Represents an entry of an archive. */
 public interface ArchiveEntry {
 
-    /** Special value indicating that the size is unknown */
-    long SIZE_UNKNOWN = -1;
+  /** Special value indicating that the size is unknown */
+  long SIZE_UNKNOWN = -1;
 
-    /**
-     * Gets the last modified date of this entry.
-     *
-     * @return the last modified date of this entry.
-     * @since 1.1
-     */
-    Date getLastModifiedDate();
+  /**
+   * Gets the last modified date of this entry.
+   *
+   * @return the last modified date of this entry.
+   * @since 1.1
+   */
+  Date getLastModifiedDate();
 
-    /**
-     * Gets the name of the entry in this archive. May refer to a file or directory or other item.
-     *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
-     *
-     * @return The name of this entry in the archive.
-     */
-    String getName();
+  /**
+   * Gets the name of the entry in this archive. May refer to a file or directory or other item.
+   *
+   * <p>This method returns the raw name as it is stored inside of the archive.
+   *
+   * @return The name of this entry in the archive.
+   */
+  String getName() {
+    return name;
+  }
 
-    /**
-     * Gets the uncompressed size of this entry. May be -1 (SIZE_UNKNOWN) if the size is unknown
-     *
-     * @return the uncompressed size of this entry.
-     */
-    long getSize();
+  /**
+   * Gets the uncompressed size of this entry. May be -1 (SIZE_UNKNOWN) if the size is unknown
+   *
+   * @return the uncompressed size of this entry.
+   */
+  long getSize();
 
-    /**
-     * Returns true if this entry refers to a directory.
-     *
-     * @return true if this entry refers to a directory.
-     */
-    boolean isDirectory();
+  /**
+   * Returns true if this entry refers to a directory.
+   *
+   * @return true if this entry refers to a directory.
+   */
+  boolean isDirectory();
 }
