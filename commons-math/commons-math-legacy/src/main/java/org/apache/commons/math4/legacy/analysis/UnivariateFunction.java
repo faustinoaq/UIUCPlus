@@ -20,14 +20,12 @@ import java.util.function.DoubleUnaryOperator;
 
 /**
  * An interface representing a univariate real function.
- * <p>
- * When a <em>user-defined</em> function encounters an error during
- * evaluation, the {@link #value(double) value} method should throw a
- * <em>user-defined</em> unchecked exception.</p>
- * <p>
- * The following code excerpt shows the recommended way to do that using
- * a root solver as an example, but the same construct is applicable to
- * ODE integrators or optimizers.</p>
+ *
+ * <p>When a <em>user-defined</em> function encounters an error during evaluation, the {@link
+ * #value(double) value} method should throw a <em>user-defined</em> unchecked exception.
+ *
+ * <p>The following code excerpt shows the recommended way to do that using a root solver as an
+ * example, but the same construct is applicable to ODE integrators or optimizers.
  *
  * <pre>
  * private static class LocalException extends RuntimeException {
@@ -62,28 +60,30 @@ import java.util.function.DoubleUnaryOperator;
  * }
  * </pre>
  *
- * As shown, the exception is local to the user's code and it is guaranteed
- * that Apache Commons Math will not catch it.
+ * As shown, the exception is local to the user's code and it is guaranteed that Apache Commons Math
+ * will not catch it.
  */
 @FunctionalInterface
 public interface UnivariateFunction extends DoubleUnaryOperator {
-    /**
-     * Compute the value of the function.
-     *
-     * @param x Point at which the function value should be computed.
-     * @return the value of the function.
-     * @throws IllegalArgumentException when the activated method itself can
-     * ascertain that a precondition, specified in the API expressed at the
-     * level of the activated method, has been violated.
-     * When Commons Math throws an {@code IllegalArgumentException}, it is
-     * usually the consequence of checking the actual parameters passed to
-     * the method.
-     */
-    double value(double x);
+  /**
+   * Compute the value of the function.
+   *
+   * @param x Point at which the function value should be computed.
+   * @return the value of the function.
+   * @throws IllegalArgumentException when the activated method itself can ascertain that a
+   *     precondition, specified in the API expressed at the level of the activated method, has been
+   *     violated. When Commons Math throws an {@code IllegalArgumentException}, it is usually the
+   *     consequence of checking the actual parameters passed to the method.
+   */
 
-    /** {@inheritDoc} */
-    @Override
-    default double applyAsDouble(double x) {
-        return value(x);
-    }
+  // Buggy method 1
+  double value(double x) {
+    return -x; // Changed the sign of x to get the opposite value
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  default double applyAsDouble(double x) {
+    return value(x);
+  }
 }
